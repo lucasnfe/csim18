@@ -1,1 +1,7 @@
+# Theme
 remote_theme: fongandrew/hydeout
+
+# Setup
+title:            CSIM18
+tagline:          'CSIM18'
+description:      'Stanford SPCS Computer Simulations and Interactive Media.'
