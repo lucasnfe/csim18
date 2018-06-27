@@ -50,7 +50,9 @@ function love.load()
 	end
 
 	-- Load step sound
-	step_sfx = love.audio.newSource("sounds/lec2-step.wav", "static")
+	sounds = {}
+	sounds["step"]=love.audio.newSource("sounds/lec2-step.wav", "static")
+	sounds["coin"]=love.audio.newSource("sounds/lec2-coin.wav", "static")
 
 	-- Load map
 	map = sti("map/lec2.lua")
@@ -59,20 +61,28 @@ end
 function love.update(dt)
 	-- Move on x axis
 	if (love.keyboard.isDown('left')) then
-		player_x = player_x - 2
-		love.audio.play(step_sfx)
+		player_x = player_x - 0.5
+		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('right')) then
-		player_x = player_x + 2
-		love.audio.play(step_sfx)
+		player_x = player_x + 0.5
+		love.audio.play(sounds["step"])
 	end
 
 	-- Move on y axis
 	if (love.keyboard.isDown('up')) then
-		player_y = player_y - 2
-		love.audio.play(step_sfx)
+		player_y = player_y - 0.5
+		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('down')) then
-		player_y = player_y + 2
-		love.audio.play(step_sfx)
+		player_y = player_y + 0.5
+		love.audio.play(sounds["step"])
+	end
+
+	-- Play a sound when player is near a coin
+	for i=1,#coins do
+		local d_coin = distance(player_x, player_y, coins[i].x, coins[i].y)
+		if (d_coin < 4) then
+			love.audio.play(sounds["coin"])
+		end
 	end
 end
 
