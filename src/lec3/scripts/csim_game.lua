@@ -9,12 +9,9 @@
 
 -- Loading external libraries
 local sti = require "lib.sti"
+local csim_math = require "scripts.csim_math"
 
 local csim_game = {}
-
-function distance(x1, y1, x2, y2)
-	return math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
-end
 
 function csim_game.load()
 	player_x = csim_game.game_width/2
@@ -65,7 +62,7 @@ function csim_game.update(dt)
 
 	-- Play a sound when player is near a coin
 	for i=1,#coins do
-		local d_coin = distance(player_x, player_y, coins[i].x, coins[i].y)
+		local d_coin = csim_math.distance(player_x, player_y, coins[i].x, coins[i].y)
 		if (d_coin < 4) then
 			love.audio.play(sounds["coin"])
 		end
