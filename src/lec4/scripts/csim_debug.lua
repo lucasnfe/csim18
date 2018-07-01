@@ -1,8 +1,8 @@
 --[[
     CSIM 2018
-    Lecture 3
+    Lecture 4
 
-    -- Debug Program --
+    -- Debug Library --
     Author: Lucas N. Ferreira
     lferreira@ucsc.edu
 ]]

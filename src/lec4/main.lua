@@ -1,6 +1,6 @@
 --[[
     CSIM 2018
-    Lecture 3
+    Lecture 4
 
     -- Main Program --
     Author: Lucas N. Ferreira
@@ -12,6 +12,7 @@ local push = require "lib.push"
 
 -- Loading CSIM libraries
 csim_debug = require('scripts.csim_debug')
+csim_camera = require('scripts.csim_camera')
 csim_game = require('scripts.csim_game')
 
 -- Setting values of global variables
@@ -70,8 +71,14 @@ end
 function love.draw()
 	push:start()
 
+	-- Enable camera
+	csim_camera.start()
+
 	-- Draw game
 	csim_game.draw()
+
+	-- Disable camera
+	csim_camera.finish()
 
 	-- Draw debugger
 	csim_debug.draw()
