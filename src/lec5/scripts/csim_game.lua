@@ -21,7 +21,7 @@ function csim_game.load()
 	local player_x = 0
  	local player_y = 64*8
 	local player_r = 0
-	local player_spr = love.graphics.newImage("sprites/lec4-player.png")
+	local player_spr = love.graphics.newImage("sprites/lec5-player.png")
 	player = csim_object:new(player_x, player_y, player_r, player_spr)
 
 	-- Create rigid body
@@ -36,7 +36,7 @@ function csim_game.load()
 		coin_x = 64*8 + 64 * i
 		coin_y = 64*8
 		coin_r = 0
-		coin_spr = love.graphics.newImage("sprites/lec4-coin.png")
+		coin_spr = love.graphics.newImage("sprites/lec5-coin.png")
 		c = csim_object:new(coin_x, coin_y, coin_r, coin_spr)
 		table.insert(coins, c)
 	end
@@ -47,7 +47,7 @@ function csim_game.load()
 	sounds["coin"]=love.audio.newSource("sounds/lec2-coin.wav", "static")
 
 	-- Load map
-	map = sti("map/lec4.lua")
+	map = sti("map/lec5.lua")
 end
 
 function csim_game.update(dt)
