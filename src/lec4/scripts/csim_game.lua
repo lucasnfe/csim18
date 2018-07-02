@@ -24,8 +24,8 @@ function csim_game.load()
 	player = csim_object:new(player_x, player_y, player_r, player_spr)
 
 	-- Create rigid body
-	local player_rigib_body = csim_rigidbody:new(player, 1)
-	player:addComponent(player_rigib_body)
+	local player_rigid_body = csim_rigidbody:new(player, 1)
+	player:addComponent(player_rigid_body)
 
 	-- Load coins
 	coins = {}
@@ -52,29 +52,29 @@ end
 function csim_game.update(dt)
 	-- Move on x axis
 	if (love.keyboard.isDown('left')) then
-		player.x = player.x - 5
+		player.pos.x = player.pos.x - 5
 		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('right')) then
-		player.x = player.x + 5
+		player.pos.x = player.pos.x + 5
 		love.audio.play(sounds["step"])
 	end
 
 	-- Move on y axis
 	if (love.keyboard.isDown('up')) then
-		player.y = player.y - 5
+		player.pos.y = player.pos.y - 5
 		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('down')) then
-		player.y = player.y + 5
+		player.pos.y = player.pos.y + 5
 		love.audio.play(sounds["step"])
 	end
 
 	player:update(dt)
-	csim_debug.rect(player.x, player.y, 64, 128)
+	csim_debug.rect(player.pos.x, player.pos.y, 64, 128)
 
 	-- Play a sound when player is near a coin
 	for i=1,#coins do
 		if (coins[i] ~= nil) then
-			local d_coin = csim_math.distance(player.x, player.y, coins[i].x, coins[i].y)
+			local d_coin = csim_math.distance(player.pos.x, player.pos.y, coins[i].pos.x, coins[i].pos.y)
 			if (d_coin < 4) then
 				-- Play coin sfx
 				love.audio.play(sounds["coin"])
@@ -85,7 +85,9 @@ function csim_game.update(dt)
 		end
 	end
 
-	csim_camera.setPosition(player.x - csim_game.game_width/2, player.y - csim_game.game_height/2)
+	-- Camera is following the player
+	csim_camera.setPosition(player.pos.x - csim_game.game_width/2, player.pos.y - csim_game.game_height/2)
+
 	love.graphics.setBackgroundColor(0.81, 0.95, 0.96)
 end
 
@@ -94,11 +96,11 @@ function csim_game.draw()
 	map:draw(-csim_camera.x, -csim_camera.y)
 
 	-- Draw the player sprite
-	love.graphics.draw(player.spr, player.x, player.y)
+	love.graphics.draw(player.spr, player.pos.x, player.pos.y)
 
 	-- Draw coins
 	for i=1,#coins do
-		love.graphics.draw(coins[i].spr, coins[i].x, coins[i].y)
+		love.graphics.draw(coins[i].spr, coins[i].pos.x, coins[i].pos.y)
 	end
 end
 

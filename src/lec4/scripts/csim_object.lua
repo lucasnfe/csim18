@@ -9,10 +9,14 @@
 
 csim_object = {}
 
+local csim_vector = require "scripts.csim_vector"
+
 function csim_object:new (x, y, rotation, spr)
     local obj = {}
-    obj.x = x
-    obj.y = y
+
+    -- TODO: Remove the attributes x and y and use a vector to
+    -- represent position
+    obj.pos = csim_vector:new(x, y)
     obj.rotation = rotation
     obj.spr = spr
     obj.components = {}
@@ -22,8 +26,8 @@ function csim_object:new (x, y, rotation, spr)
 end
 
 function csim_object:setPosition(x, y)
-    self.x = x or self.x
-    self.y = y or self.y
+    self.pos.x = x or self.pos.x
+    self.pos.y = y or self.pos.y
 end
 
 function csim_object:setRotation(r)

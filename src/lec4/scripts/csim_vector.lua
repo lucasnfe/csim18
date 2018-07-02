@@ -24,18 +24,31 @@ function csim_vector:add(v)
 end
 
 function csim_vector:sub(v)
+    self.x = self.x - v.x
+    self.y = self.y - v.y
 end
 
 function csim_vector:mul(s)
+    self.x = self.x * s
+    self.y = self.y * s
 end
 
 function csim_vector:div(s)
+    self.x = self.x / s
+    self.y = self.y / s
 end
 
-function csim_vector:mag(s)
+function csim_vector:mag()
+    -- TODO: use self.x and self.y to calculate the magnitude of the vector "self"
+    -- HINT: use math.sqrt()
+    return math.sqrt(self.x*self.x + self.y*self.y)
 end
 
 function csim_vector:norm()
+    -- TODO: Use your magnitude fucntion to calculate magnitude
+    -- and Divide self.x, self.y by it.
+    local mag = self.mag()
+    self.div(mag)
 end
 
 return csim_vector
