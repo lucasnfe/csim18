@@ -17,8 +17,9 @@ function csim_debug.init(screen_width, screen_height, console_height)
     csim_debug.messages = {}
     csim_debug.rects = {}
     csim_debug.show_console = false
-    csim_debug.state = 0
-    csim_debug.font = love.graphics.newFont('fonts/font.ttf', 4)
+    csim_debug.states = {0, 1, 2}
+    csim_debug.state = csim_debug.states[1]
+    csim_debug.font = love.graphics.newFont('fonts/font.ttf', 2)
 end
 
 function csim_debug.showConsole()
@@ -31,11 +32,15 @@ function csim_debug.hideConsole()
     csim_debug.state = 0
 end
 
+function csim_debug.nextState()
+    csim_debug.state = (csim_debug.state + 1) % #csim_debug.states
+end
+
 function csim_debug.isShowing()
     return csim_debug.show_console
 end
 
-function csim_debug.debug(message)
+function csim_debug.text(message)
     if csim_debug.messages[message] == nil then
         csim_debug.messages[message] = 1
     else
@@ -44,46 +49,65 @@ function csim_debug.debug(message)
 end
 
 function csim_debug.rect(x, y, w, h)
-
+    local rect = {x = x, y = y, w = w, h = h}
+    local key = "x"..x.."y"..y
+    if csim_debug.rects[key] == nil then
+        csim_debug.rects[key] = rect
+    end
 end
 
 function csim_debug.draw()
-    if (csim_debug.show_console == true) then
-        -- Save graphics state
-        r,g,b,a = love.graphics.getColor()
-        prev_font = love.graphics.getFont()
+    if (csim_debug.show_console == false) then return end
 
-        -- Draw grey console
-        love.graphics.setColor(0.2, 0.2, 0.2)
-        love.graphics.rectangle("fill", csim_debug.x, csim_debug.y, csim_debug.width, csim_debug.height)
+    -- Save graphics state
+    r,g,b,a = love.graphics.getColor()
+    prev_font = love.graphics.getFont()
 
-        -- Draw console label
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.setFont(csim_debug.font)
-        love.graphics.printf("console", csim_debug.x, csim_debug.y, csim_debug.width)
+    -- Draw grey console
+    love.graphics.setColor(0.2, 0.2, 0.2)
+    love.graphics.rectangle("fill", csim_debug.x, csim_debug.y, csim_debug.width, csim_debug.height)
 
-        local i = 1
-        for message,count in pairs(csim_debug.messages) do
-            love.graphics.printf(message, csim_debug.x, csim_debug.y + i * 10, csim_debug.width)
-            love.graphics.printf(count, csim_debug.width - 8, csim_debug.y + i * 10, csim_debug.width)
-            i = i + 1
-        end
+    -- Draw console label
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.setFont(csim_debug.font)
+    love.graphics.printf("console", csim_debug.x + 2, csim_debug.y + 2, csim_debug.width)
 
-        local mode = ""
-        if (csim_debug.state == 0) then
-            mode = ""
-        elseif (csim_debug.state == 1) then
-            mode = "single step"
-        elseif (csim_debug.state == 2) then
-            mode = "slow motion"
-        end
-
-        love.graphics.printf(mode, csim_debug.width - 45, csim_debug.y, csim_debug.width)
-
-        -- Reset graphics state
-        love.graphics.setColor(r,g,b,a)
-        love.graphics.setFont(prev_font)
+    -- Draw debug messages
+    local i = 1
+    for message,count in pairs(csim_debug.messages) do
+        love.graphics.printf(message, csim_debug.x + 2, csim_debug.y + i * 10, csim_debug.width)
+        love.graphics.printf(count, csim_debug.width - 8, csim_debug.y + i * 10, csim_debug.width)
+        i = i + 1
     end
+
+    -- Draw debug rects
+    for rect_pos,rect in pairs(csim_debug.rects) do
+        love.graphics.rectangle("line", rect.x - csim_camera.x, rect.y - csim_camera.y, rect.w, rect.h)
+    end
+
+    -- Draw debug mode
+    local mode = ""
+    if (csim_debug.state == 0) then
+        mode = ""
+    elseif (csim_debug.state == 1) then
+        mode = "single step"
+    elseif (csim_debug.state == 2) then
+        mode = "slow motion"
+    end
+
+    love.graphics.printf(mode, csim_debug.width - 25, csim_debug.y, csim_debug.width)
+
+    -- Draw game stats
+    love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 2, 2)
+    local mem = string.format("MEM: %.2f MB", love.graphics.getStats().texturememory / 1024 / 1024)
+    love.graphics.print(mem, 2, 6)
+
+    -- Reset rects table
+    csim_debug.rects = {}
+
+    -- Reset graphics state
+    love.graphics.setColor(r,g,b,a)
+    love.graphics.setFont(prev_font)
 end
 
 return csim_debug

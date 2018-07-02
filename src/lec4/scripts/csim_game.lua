@@ -63,6 +63,8 @@ function csim_game.update(dt)
 		love.audio.play(sounds["step"])
 	end
 
+	csim_debug.rect(player.x, player.y, 8, 8)
+
 	-- Play a sound when player is near a coin
 	for i=1,#coins do
 		if (coins[i] ~= nil) then

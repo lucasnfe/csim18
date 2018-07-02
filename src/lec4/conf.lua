@@ -8,7 +8,7 @@
 ]]
 
 function love.conf(t)
-    t.title = "Lec3"	        	-- The title of the window the game is in (string)
+    t.title = "Lec4"	        	-- The title of the window the game is in (string)
     t.author = "Lucas N. Ferreira"	-- The author of the game (string)
     t.window.width = 512			-- The window width (number)
     t.window.height = 512			-- The window height (number)

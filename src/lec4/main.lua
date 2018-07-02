@@ -21,7 +21,7 @@ csim_game.game_height = 128
 
 function love.keypressed(key, scancode, isrepeat)
 	if (key == "-") then
-		if (csim_debug.isShowing() == true) then
+		if (csim_debug.isShowing()) then
 			csim_debug.hideConsole()
 		else
 			csim_debug.showConsole()
@@ -29,12 +29,12 @@ function love.keypressed(key, scancode, isrepeat)
 	end
 
 	if (key == "=") then
-		if (csim_debug.isShowing() == true) then
-			csim_debug.state = (csim_debug.state + 1) % 3
+		if (csim_debug.isShowing()) then
+			csim_debug.nextState()
 		end
 	end
 
-	if (key == "q") then
+	if (key == "escape") then
 		love.event.quit()
 	end
 end
@@ -48,7 +48,7 @@ function love.load()
 	push:setupScreen(csim_game.game_width, csim_game.game_height, window_width, window_height, {fullscreen = false})
 
 	-- Load Debugger
-	csim_debug.init(csim_game.game_width, csim_game.game_height, 30)
+	csim_debug.init(csim_game.game_width, csim_game.game_height, csim_game.game_height/4)
 
 	-- Load Game
 	csim_game.load()

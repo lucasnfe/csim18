@@ -15,11 +15,11 @@ function csim_object:new (x, y, rotation, spr)
     obj.y = y
     obj.rotation = rotation
     obj.spr = spr
+    obj.comp = {}
     setmetatable(obj, self)
     self.__index = self
     return obj
 end
-
 
 function csim_object:setPosition(x, y)
     self.x = x or self.x
