@@ -11,6 +11,7 @@
 local sti = require "lib.sti"
 local csim_object = require "scripts.csim_object"
 local csim_math = require "scripts.csim_math"
+local csim_vector = require "scripts.csim_vector"
 local csim_rigidbody = require "scripts.components.csim_rigidbody"
 
 local csim_game = {}
@@ -52,10 +53,16 @@ end
 function csim_game.update(dt)
 	-- Move on x axis
 	if (love.keyboard.isDown('left')) then
-		player.pos.x = player.pos.x - 5
+		-- Move player applying a force to it
+		player:getComponent("rigidbody"):applyForce(csim_vector:new(-1,0))
+
+		-- Play the steps sfx
 		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('right')) then
-		player.pos.x = player.pos.x + 5
+		-- Move player applying a force to it
+		player:getComponent("rigidbody"):applyForce(csim_vector:new(1,0))
+
+		-- Play the steps sfx
 		love.audio.play(sounds["step"])
 	end
 

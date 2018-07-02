@@ -35,7 +35,13 @@ function csim_object:setRotation(r)
 end
 
 function csim_object:addComponent(component)
-    table.insert(self.components, component)
+    if(component ~= nil) then
+        self.components[component.name] = component
+    end
+end
+
+function csim_object:getComponent(name)
+    return self.components[name]
 end
 
 function csim_object:load()
@@ -47,9 +53,9 @@ function csim_object:load()
 end
 
 function csim_object:update(dt)
-    for i=1,#self.components do
-        if(self.components[i].update ~= nil) then
-            self.components[i]:update(dt)
+    for name,component in pairs(self.components) do
+        if(component.update ~= nil) then
+            component:update(dt)
         end
     end
 end
