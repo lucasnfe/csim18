@@ -19,6 +19,8 @@ function csim_vector:new (x, y)
 end
 
 function csim_vector:add(v)
+    self.x = self.x + v.x
+    self.y = self.y + v.y
 end
 
 function csim_vector:sub(v)

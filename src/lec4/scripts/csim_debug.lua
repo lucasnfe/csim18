@@ -9,7 +9,7 @@
 
 local csim_debug = {}
 
-function csim_debug.init(screen_width, screen_height, console_height)
+function csim_debug.init(screen_width, screen_height, console_height, font_size)
     csim_debug.width = screen_width
     csim_debug.height = console_height
     csim_debug.x = 0
@@ -19,7 +19,7 @@ function csim_debug.init(screen_width, screen_height, console_height)
     csim_debug.show_console = false
     csim_debug.states = {0, 1, 2}
     csim_debug.state = csim_debug.states[1]
-    csim_debug.font = love.graphics.newFont('fonts/font.ttf', 2)
+    csim_debug.font = love.graphics.newFont('fonts/font.ttf', font_size)
 end
 
 function csim_debug.showConsole()
@@ -75,8 +75,8 @@ function csim_debug.draw()
     -- Draw debug messages
     local i = 1
     for message,count in pairs(csim_debug.messages) do
-        love.graphics.printf(message, csim_debug.x + 2, csim_debug.y + i * 10, csim_debug.width)
-        love.graphics.printf(count, csim_debug.width - 8, csim_debug.y + i * 10, csim_debug.width)
+        love.graphics.printf(message, csim_debug.x + 2, csim_debug.y + i * csim_debug.font:getHeight(), csim_debug.width)
+        love.graphics.printf(count, csim_debug.width - 8, csim_debug.y + i * csim_debug.font:getHeight(), csim_debug.width)
         i = i + 1
     end
 
@@ -95,12 +95,12 @@ function csim_debug.draw()
         mode = "slow motion"
     end
 
-    love.graphics.printf(mode, csim_debug.width - 25, csim_debug.y, csim_debug.width)
+    love.graphics.printf(mode, csim_debug.width - csim_debug.font:getWidth(mode), csim_debug.y, csim_debug.width)
 
     -- Draw game stats
     love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 2, 2)
     local mem = string.format("MEM: %.2f MB", love.graphics.getStats().texturememory / 1024 / 1024)
-    love.graphics.print(mem, 2, 6)
+    love.graphics.print(mem, 2, csim_debug.font:getHeight() + 4)
 
     -- Reset rects table
     csim_debug.rects = {}

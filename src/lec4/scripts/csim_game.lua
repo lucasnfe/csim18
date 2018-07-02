@@ -11,26 +11,31 @@
 local sti = require "lib.sti"
 local csim_object = require "scripts.csim_object"
 local csim_math = require "scripts.csim_math"
+local csim_rigidbody = require "scripts.components.csim_rigidbody"
 
 local csim_game = {}
 
 function csim_game.load()
 	-- Create player
-	local player_x = csim_game.game_width/2
- 	local player_y = csim_game.game_height/2
+	local player_x = 0
+ 	local player_y = 64*8
 	local player_r = 0
-	local player_spr = love.graphics.newImage("sprites/lec2-player.png")
+	local player_spr = love.graphics.newImage("sprites/lec4-player.png")
 	player = csim_object:new(player_x, player_y, player_r, player_spr)
+
+	-- Create rigid body
+	local player_rigib_body = csim_rigidbody:new(player, 1)
+	player:addComponent(player_rigib_body)
 
 	-- Load coins
 	coins = {}
 
 	local coins_amount = 5
 	for i=1,coins_amount do
-		coin_x = 30 + 10 * i
-		coin_y = 50
+		coin_x = 64*8 + 64 * i
+		coin_y = 64*8
 		coin_r = 0
-		coin_spr = love.graphics.newImage("sprites/lec2-coin.png")
+		coin_spr = love.graphics.newImage("sprites/lec4-coin.png")
 		c = csim_object:new(coin_x, coin_y, coin_r, coin_spr)
 		table.insert(coins, c)
 	end
@@ -47,23 +52,24 @@ end
 function csim_game.update(dt)
 	-- Move on x axis
 	if (love.keyboard.isDown('left')) then
-		player.x = player.x - 0.5
+		player.x = player.x - 5
 		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('right')) then
-		player.x = player.x + 0.5
+		player.x = player.x + 5
 		love.audio.play(sounds["step"])
 	end
 
 	-- Move on y axis
 	if (love.keyboard.isDown('up')) then
-		player.y = player.y - 0.5
+		player.y = player.y - 5
 		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('down')) then
-		player.y = player.y + 0.5
+		player.y = player.y + 5
 		love.audio.play(sounds["step"])
 	end
 
-	csim_debug.rect(player.x, player.y, 8, 8)
+	player:update(dt)
+	csim_debug.rect(player.x, player.y, 64, 128)
 
 	-- Play a sound when player is near a coin
 	for i=1,#coins do
@@ -80,6 +86,7 @@ function csim_game.update(dt)
 	end
 
 	csim_camera.setPosition(player.x - csim_game.game_width/2, player.y - csim_game.game_height/2)
+	love.graphics.setBackgroundColor(0.81, 0.95, 0.96)
 end
 
 function csim_game.draw()

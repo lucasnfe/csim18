@@ -16,8 +16,8 @@ csim_camera = require('scripts.csim_camera')
 csim_game = require('scripts.csim_game')
 
 -- Setting values of global variables
-csim_game.game_width = 128
-csim_game.game_height = 128
+csim_game.game_width = 1024
+csim_game.game_height = 768
 
 function love.keypressed(key, scancode, isrepeat)
 	if (key == "-") then
@@ -40,15 +40,12 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.load()
-	-- Set love's default filter to "nearest-neighbor".
-	love.graphics.setDefaultFilter('nearest', 'nearest')
-
 	-- Initialize virtual resolution
-	local window_width, window_height, flags = love.window.getMode()
-	push:setupScreen(csim_game.game_width, csim_game.game_height, window_width, window_height, {fullscreen = false})
+	local window_width, window_height, flags  = love.window.getMode()
+	push:setupScreen(csim_game.game_width, csim_game.game_height, window_width, window_height, {highdpi=true})
 
 	-- Load Debugger
-	csim_debug.init(csim_game.game_width, csim_game.game_height, csim_game.game_height/4)
+	csim_debug.init(csim_game.game_width, csim_game.game_height, csim_game.game_height/4, 20)
 
 	-- Load Game
 	csim_game.load()

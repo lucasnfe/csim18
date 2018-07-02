@@ -15,7 +15,7 @@ function csim_object:new (x, y, rotation, spr)
     obj.y = y
     obj.rotation = rotation
     obj.spr = spr
-    obj.comp = {}
+    obj.components = {}
     setmetatable(obj, self)
     self.__index = self
     return obj
@@ -26,13 +26,28 @@ function csim_object:setPosition(x, y)
     self.y = y or self.y
 end
 
-function csim_object.setRotation(r)
+function csim_object:setRotation(r)
     self.rotation = r or self.rotation
 end
 
-function csim_object.setScale(sx, sy)
-    self.scale_x = sx or self.scale_x
-    self.scale_y = sy or self.scale_y
+function csim_object:addComponent(component)
+    table.insert(self.components, component)
+end
+
+function csim_object:load()
+    for i=1,#self.components do
+        if(self.components[i].load ~= nil) then
+            self.components[i]:load()
+        end
+    end
+end
+
+function csim_object:update(dt)
+    for i=1,#self.components do
+        if(self.components[i].update ~= nil) then
+            self.components[i]:update(dt)
+        end
+    end
 end
 
 return csim_object
