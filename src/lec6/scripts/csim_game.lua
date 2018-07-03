@@ -31,7 +31,7 @@ function csim_game.load()
 	items = csim_game.loadItems()
 
 	-- Create rigid body
-	local player_rigid_body = csim_rigidbody:new(1, 1, -5)
+	local player_rigid_body = csim_rigidbody:new(1, 1, -3)
 	player:addComponent(player_rigid_body)
 
 	-- Create collider
@@ -104,9 +104,6 @@ function csim_game.update(dt)
 	-- Move on x axis
 	local speed_x = player:getComponent("rigidbody").speed.x
 	local speed_y = player:getComponent("rigidbody").speed.y
-
-	print(speed_x)
-	print(speed_y)
 
 	if (love.keyboard.isDown('left')) then
 		player:getComponent("rigidbody"):applyForce(csim_vector:new(-speed_x,0))

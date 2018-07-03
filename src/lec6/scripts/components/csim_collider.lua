@@ -46,17 +46,17 @@ function csim_collider:update(dt)
     local tile_x1, tile_y1 = self:worldToMapPos(col_pos1)
     local tile_x2, tile_y2 = self:worldToMapPos(col_pos2)
 
-    -- if(vert_side == 1) then
-    --     if(self:detectVerticalCollision(tile_x1+1, tile_y1+1, vert_side)) then
-    --        self:didCollideVertically(tile_x1, tile_y1, vert_side)
-    --     end
-    -- end
+    if(vert_side == 1) then
+        if(self:detectVerticalCollision(tile_x1+1, tile_y1+1, vert_side)) then
+           self:didCollideVertically(tile_x1, tile_y1, vert_side)
+        end
+    end
 
-    -- if(vert_side == -1) then
-    --     if(self:detectVerticalCollision(tile_x2-1, tile_y2-1, vert_side)) then
-    --         self:didCollideVertically(tile_x2, tile_y2, vert_side)
-    --     end
-    -- end
+    if(vert_side == -1) then
+        if(self:detectVerticalCollision(tile_x2-1, tile_y2-1, vert_side)) then
+            self:didCollideVertically(tile_x2, tile_y2, vert_side)
+        end
+    end
 
     -- Object is moving right
     local horiz_side = 1
@@ -76,57 +76,71 @@ function csim_collider:update(dt)
     local tile_x1, tile_y1 = self:worldToMapPos(col_pos1)
     local tile_x2, tile_y2 = self:worldToMapPos(col_pos2)
 
-    -- if(horiz_side == 1) then
-    --     if(self:detectHorizontalCollision(tile_x1, tile_y1, horiz_side)) then
-    --         self:didCollideHorizontally(tile_x1, tile_y1, horiz_side)
-    --     end
-    -- end
-    --
-    -- if(horiz_side == -1) then
-    --     if(self:detectHorizontalCollision(tile_x2, tile_y2, horiz_side)) then
-    --         self:didCollideHorizontally(tile_x2, tile_y2, horiz_side)
-    --     end
-    -- end
+    if(horiz_side == 1) then
+        if(self:detectHorizontalCollision(tile_x1, tile_y1, horiz_side)) then
+            self:didCollideHorizontally(tile_x1, tile_y1, horiz_side)
+        end
+    end
+
+    if(horiz_side == -1) then
+        if(self:detectHorizontalCollision(tile_x2, tile_y2, horiz_side)) then
+            self:didCollideHorizontally(tile_x2, tile_y2, horiz_side)
+        end
+    end
 end
 
 function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
     -- TODO: Set y component of velocity to zero
-
+    self.parent:getComponent("rigidbody").vel.y = 0
 
     -- TODO: Set rigidbody y position to be the tile y pos
     -- Hint: use map:convertTileToPixel
+    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y - vert_side)
+    self.parent.pos.y = screen_y
 
 end
 
 function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
     -- TODO: Set x component of velocity to zero
-
+    self.parent:getComponent("rigidbody").vel.x = 0
 
     -- TODO: Set rigidbody x position to be the tile x pos
     -- Hint: use map:convertTileToPixel
-
+    screen_x, screen_y = map:convertTileToPixel(tile_x - horiz_side, tile_y)
+    self.parent.pos.x = screen_x
 end
 
 function csim_collider:worldToMapPos(pos)
     -- TODO: return the tile in which the object is right now
     -- Hint: use map:convertPixelToTile(x,y) and math.floor(n) to
-
+    x,y = map:convertPixelToTile(pos.x, pos.y)
+    return math.floor(x) + 1, math.floor(y) + 1
 end
 
 function csim_collider:detectVerticalCollision(tile_x, tile_y, vert_side)
     -- TODO: Create a variable to store the tile which the object is trying to visit
     -- Hint: Use map.layers['Terrain']
+    local tile = map.layers["Terrain"].data[tile_y + vert_side][tile_x]
 
     -- TODO: Check if the tile has property "collide", then return true
+    if (tile and tile.properties["collide"]) then
+        return true
+    end
 
+    return false
 end
 
 function csim_collider:detectHorizontalCollision(tile_x, tile_y, horiz_side)
     -- TODO: Create a variable to store the tile which the object is trying to visit
     -- Hint: Use map.layers['Terrain']
+    local tile = map.layers["Terrain"].data[tile_y][tile_x + horiz_side]
 
     -- TODO: Check if the tile has property "collide", then return true
+    if(tile and tile.properties["collide"]) then
+        return true
+    end
 
+    return false
 end
 
 return csim_collider
