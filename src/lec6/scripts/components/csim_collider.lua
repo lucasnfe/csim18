@@ -33,60 +33,60 @@ function csim_collider:update(dt)
         vert_side = -1
     end
 
-    local col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x, self.parent.pos.y + self.rect.y)
-    local col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w, self.parent.pos.y + self.rect.y)
-
-    if(vert_side == -1) then
-        col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x, self.parent.pos.y + self.rect.y + self.rect.h)
-        col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w, self.parent.pos.y + self.rect.y + self.rect.h)
+    local horiz_side = 0
+    if(parent_rigid_body.vel.x > 0) then
+        -- Object is moving right
+        horiz_side = 1
     end
 
-    csim_debug.rect(col_pos1.x, col_pos1.y, self.rect.w, self.rect.h)
+    local col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x,
+                        self.parent.pos.y + self.rect.y + self.rect.h)
+    local col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w,
+                        self.parent.pos.y + self.rect.y + self.rect.h)
+
+    if(vert_side == -1) then
+        col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x,
+                            self.parent.pos.y + self.rect.y)
+        col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w,
+                            self.parent.pos.y + self.rect.y)
+    end
 
     local tile_x1, tile_y1 = self:worldToMapPos(col_pos1)
     local tile_x2, tile_y2 = self:worldToMapPos(col_pos2)
 
     if(vert_side == 1) then
-        if(self:detectVerticalCollision(tile_x1+1, tile_y1+1, vert_side)) then
+        if(self:detectVerticalCollision(tile_x1, tile_y1, vert_side)) then
            self:didCollideVertically(tile_x1, tile_y1, vert_side)
         end
-    end
 
-    if(vert_side == -1) then
-        if(self:detectVerticalCollision(tile_x2-1, tile_y2-1, vert_side)) then
+        if(self:detectVerticalCollision(tile_x2, tile_y2, vert_side)) then
             self:didCollideVertically(tile_x2, tile_y2, vert_side)
         end
     end
 
-    -- Object is moving right
-    local horiz_side = 1
-    if(parent_rigid_body.vel.x < 0) then
-        -- Object is moving left
-        horiz_side = -1
-    end
-
-    local col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w, self.parent.pos.y + self.rect.y)
-    local col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w, self.parent.pos.y + self.rect.y + self.rect.h)
+    local col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w,
+                        self.parent.pos.y + self.rect.y - 0.01)
+    local col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w,
+                        self.parent.pos.y + self.rect.y + self.rect.h - 0.01)
 
     if(horiz_side == -1) then
-        col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x, self.parent.pos.y + self.rect.y)
-        col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x, self.parent.pos.y + self.rect.y + self.rect.h)
+        col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x,
+                            self.parent.pos.y + self.rect.y - 0.01)
+        col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x,
+                            self.parent.pos.y + self.rect.y + self.rect.h - 0.01)
     end
 
     local tile_x1, tile_y1 = self:worldToMapPos(col_pos1)
     local tile_x2, tile_y2 = self:worldToMapPos(col_pos2)
 
-    if(horiz_side == 1) then
-        if(self:detectHorizontalCollision(tile_x1, tile_y1, horiz_side)) then
-            self:didCollideHorizontally(tile_x1, tile_y1, horiz_side)
-        end
+    if(self:detectHorizontalCollision(tile_x1, tile_y1, horiz_side)) then
+        self:didCollideHorizontally(tile_x1, tile_y1, horiz_side)
     end
 
-    if(horiz_side == -1) then
-        if(self:detectHorizontalCollision(tile_x2, tile_y2, horiz_side)) then
-            self:didCollideHorizontally(tile_x2, tile_y2, horiz_side)
-        end
+    if(self:detectHorizontalCollision(tile_x2, tile_y2, horiz_side)) then
+        self:didCollideHorizontally(tile_x2, tile_y2, horiz_side)
     end
+
 end
 
 function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
@@ -95,9 +95,9 @@ function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
 
     -- TODO: Set rigidbody y position to be the tile y pos
     -- Hint: use map:convertTileToPixel
-    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y - vert_side)
+    local extra_height = math.ceil(self.rect.h/64)
+    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y - extra_height * vert_side)
     self.parent.pos.y = screen_y
-
 end
 
 function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
@@ -106,25 +106,29 @@ function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
 
     -- TODO: Set rigidbody x position to be the tile x pos
     -- Hint: use map:convertTileToPixel
-    screen_x, screen_y = map:convertTileToPixel(tile_x - horiz_side, tile_y)
-    self.parent.pos.x = screen_x
+    local extra_width = math.ceil(self.rect.w/64)
+    screen_x, screen_y = map:convertTileToPixel(tile_x - extra_width * horiz_side, tile_y)
+    self.parent.pos.x = screen_x - 0.01 * horiz_side
 end
 
 function csim_collider:worldToMapPos(pos)
     -- TODO: return the tile in which the object is right now
     -- Hint: use map:convertPixelToTile(x,y) and math.floor(n) to
     x,y = map:convertPixelToTile(pos.x, pos.y)
-    return math.floor(x) + 1, math.floor(y) + 1
+    return math.floor(x), math.floor(y)
 end
 
 function csim_collider:detectVerticalCollision(tile_x, tile_y, vert_side)
     -- TODO: Create a variable to store the tile which the object is trying to visit
     -- Hint: Use map.layers['Terrain']
-    local tile = map.layers["Terrain"].data[tile_y + vert_side][tile_x]
+    local map_data = map.layers["Terrain"].data
+    if map_data[tile_y + vert_side] and map_data[tile_y + vert_side][tile_x+1] then
+        local tile = map_data[tile_y + vert_side][tile_x+1]
 
-    -- TODO: Check if the tile has property "collide", then return true
-    if (tile and tile.properties["collide"]) then
-        return true
+        -- TODO: Check if the tile has property "collide", then return true
+        if (tile and tile.properties["collide"]) then
+            return true
+        end
     end
 
     return false
@@ -133,11 +137,14 @@ end
 function csim_collider:detectHorizontalCollision(tile_x, tile_y, horiz_side)
     -- TODO: Create a variable to store the tile which the object is trying to visit
     -- Hint: Use map.layers['Terrain']
-    local tile = map.layers["Terrain"].data[tile_y][tile_x + horiz_side]
+    local map_data = map.layers["Terrain"].data
+    if map_data[tile_y+1] and map_data[tile_y+1][tile_x + horiz_side] then
+        local tile = map_data[tile_y+1][tile_x + horiz_side]
 
-    -- TODO: Check if the tile has property "collide", then return true
-    if(tile and tile.properties["collide"]) then
-        return true
+        -- TODO: Check if the tile has property "collide", then return true
+        if(tile and tile.properties["collide"]) then
+            return true
+        end
     end
 
     return false

@@ -10,6 +10,7 @@
 local csim_vector = require "scripts.csim_vector"
 
 local csim_rigidbody = {}
+local gravity = 9.8
 
 function csim_rigidbody:new(mass, speed_x, speed_y)
     local comp = {}
@@ -35,7 +36,7 @@ end
 function csim_rigidbody:update(dt)
     -- TODO: create a vector g (0,9.8) representing gravity
     -- using csim_vector:new()
-    local g = csim_vector:new(0, 0.98*self.mass)
+    local g = csim_vector:new(0, gravity*0.05*self.mass)
     self:applyForce(g)
 
     -- TODO: Sum acc to self.vel

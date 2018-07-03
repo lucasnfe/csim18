@@ -31,7 +31,7 @@ function csim_game.load()
 	items = csim_game.loadItems()
 
 	-- Create rigid body
-	local player_rigid_body = csim_rigidbody:new(1, 1, -3)
+	local player_rigid_body = csim_rigidbody:new(1, 0.1, -1)
 	player:addComponent(player_rigid_body)
 
 	-- Create collider
@@ -109,8 +109,11 @@ function csim_game.update(dt)
 		player:getComponent("rigidbody"):applyForce(csim_vector:new(-speed_x,0))
 		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('right')) then
-		player:getComponent("rigidbody"):applyForce(csim_vector:new(speed_x,0))
+		player:getComponent("rigidbody"):applyForce(csim_vector:new(speed_x, 0))
 		love.audio.play(sounds["step"])
+	else
+		-- Friction
+		player:getComponent("rigidbody").vel.x = 0
 	end
 
 	-- Move on y axis
