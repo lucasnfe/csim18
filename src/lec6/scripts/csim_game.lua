@@ -10,7 +10,9 @@
 -- Loading external libraries
 local sti = require "lib.sti"
 local csim_object = require "scripts.csim_object"
+
 local csim_math = require "scripts.csim_math"
+local csim_vector = require "scripts.csim_vector"
 
 -- Loading components
 local csim_rigidbody = require "scripts.components.csim_rigidbody"
@@ -29,7 +31,7 @@ function csim_game.load()
 	items = csim_game.loadItems()
 
 	-- Create rigid body
-	local player_rigid_body = csim_rigidbody:new(1)
+	local player_rigid_body = csim_rigidbody:new(1, 1, -5)
 	player:addComponent(player_rigid_body)
 
 	-- Create collider
@@ -100,20 +102,23 @@ end
 
 function csim_game.update(dt)
 	-- Move on x axis
+	local speed_x = player:getComponent("rigidbody").speed.x
+	local speed_y = player:getComponent("rigidbody").speed.y
+
+	print(speed_x)
+	print(speed_y)
+
 	if (love.keyboard.isDown('left')) then
-		player.pos.x = player.pos.x - 5
+		player:getComponent("rigidbody"):applyForce(csim_vector:new(-speed_x,0))
 		love.audio.play(sounds["step"])
 	elseif(love.keyboard.isDown('right')) then
-		player.pos.x = player.pos.x + 5
+		player:getComponent("rigidbody"):applyForce(csim_vector:new(speed_x,0))
 		love.audio.play(sounds["step"])
 	end
 
 	-- Move on y axis
 	if (love.keyboard.isDown('up')) then
-		player.pos.y = player.pos.y - 5
-		love.audio.play(sounds["step"])
-	elseif(love.keyboard.isDown('down')) then
-		player.pos.y = player.pos.y + 5
+		player:getComponent("rigidbody"):applyForce(csim_vector:new(0, speed_y))
 		love.audio.play(sounds["step"])
 	end
 

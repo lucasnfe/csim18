@@ -11,8 +11,9 @@ local csim_vector = require "scripts.csim_vector"
 
 local csim_rigidbody = {}
 
-function csim_rigidbody:new(mass)
+function csim_rigidbody:new(mass, speed_x, speed_y)
     local comp = {}
+    comp.speed = csim_vector:new(speed_x, speed_y)
     comp.vel = csim_vector:new(0,0)
     comp.acc = csim_vector:new(0,0)
     comp.mass = mass
