@@ -46,17 +46,17 @@ function csim_collider:update(dt)
     local tile_x1, tile_y1 = self:worldToMapPos(col_pos1)
     local tile_x2, tile_y2 = self:worldToMapPos(col_pos2)
 
-    if(vert_side == 1) then
-        if(self:detectVerticalCollision(tile_x1+1, tile_y1+1, vert_side)) then
-           self:didCollideVertically(tile_x1, tile_y1, vert_side)
-        end
-    end
+    -- if(vert_side == 1) then
+    --     if(self:detectVerticalCollision(tile_x1+1, tile_y1+1, vert_side)) then
+    --        self:didCollideVertically(tile_x1, tile_y1, vert_side)
+    --     end
+    -- end
 
-    if(vert_side == -1) then
-        if(self:detectVerticalCollision(tile_x2-1, tile_y2-1, vert_side)) then
-            self:didCollideVertically(tile_x2, tile_y2, vert_side)
-        end
-    end
+    -- if(vert_side == -1) then
+    --     if(self:detectVerticalCollision(tile_x2-1, tile_y2-1, vert_side)) then
+    --         self:didCollideVertically(tile_x2, tile_y2, vert_side)
+    --     end
+    -- end
 
     -- Object is moving right
     local horiz_side = 1
@@ -76,17 +76,17 @@ function csim_collider:update(dt)
     local tile_x1, tile_y1 = self:worldToMapPos(col_pos1)
     local tile_x2, tile_y2 = self:worldToMapPos(col_pos2)
 
-    if(horiz_side == 1) then
-        if(self:detectHorizontalCollision(tile_x1, tile_y1, horiz_side)) then
-            self:didCollideHorizontally(tile_x1, tile_y1, horiz_side)
-        end
-    end
-
-    if(horiz_side == -1) then
-        if(self:detectHorizontalCollision(tile_x2, tile_y2, horiz_side)) then
-            self:didCollideHorizontally(tile_x2, tile_y2, horiz_side)
-        end
-    end
+    -- if(horiz_side == 1) then
+    --     if(self:detectHorizontalCollision(tile_x1, tile_y1, horiz_side)) then
+    --         self:didCollideHorizontally(tile_x1, tile_y1, horiz_side)
+    --     end
+    -- end
+    --
+    -- if(horiz_side == -1) then
+    --     if(self:detectHorizontalCollision(tile_x2, tile_y2, horiz_side)) then
+    --         self:didCollideHorizontally(tile_x2, tile_y2, horiz_side)
+    --     end
+    -- end
 end
 
 function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
