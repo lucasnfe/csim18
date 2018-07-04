@@ -159,8 +159,6 @@ function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
     -- TODO: Set x component of velocity to zero
     parent_rigid_body.vel.x = 0
 
-    csim_debug.text(tile_x)
-
     -- TODO: Set rigidbody x position to be the tile x pos
     -- Hint: use map:convertTileToPixel
     local extra_width = math.ceil(self.rect.w/map.tilewidth)
