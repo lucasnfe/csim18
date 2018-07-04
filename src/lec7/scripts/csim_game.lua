@@ -40,6 +40,12 @@ function csim_game.load()
 	-- Load items
 	items = csim_game.loadItems()
 
+	-- Adding collider to coins
+	for i=1,#items do
+		local item_collider = csim_collider:new(map, items[i].rect)
+		items[i]:addComponent(item_collider)
+	end
+
 	-- Create rigid body
 	local player_rigid_body = csim_rigidbody:new(1, 0.1, 6)
 	player:addComponent(player_rigid_body)
@@ -76,7 +82,7 @@ function csim_game.loadCharacters()
 					player.rect.w = map_data[y][x].properties["w"]
 					player.rect.h = map_data[y][x].properties["h"]
 				else
-					enemy = csim_object:new(screen_y, screen_x, 0, spr)
+					local enemy = csim_object:new(screen_y, screen_x, 0, spr)
 
 					enemy.rect = {}
 					enemy.rect.x = map_data[y][x].properties["x"]
@@ -108,6 +114,13 @@ function csim_game.loadItems()
 				screen_x, screen_y = map:convertTileToPixel(y - 1, x - 1)
 
 				local item = csim_object:new(screen_y, screen_x, 0, spr)
+
+				item.rect = {}
+				item.rect.x = map_data[y][x].properties["x"]
+				item.rect.y = map_data[y][x].properties["y"]
+				item.rect.w = map_data[y][x].properties["w"]
+				item.rect.h = map_data[y][x].properties["h"]
+
 				table.insert(items, item)
 			end
 		end
@@ -117,8 +130,8 @@ function csim_game.loadItems()
 	return items
 end
 
-function csim_game.detectDynamicCollision()
-	-- TODO: Check AABB collision against all items
+function csim_game.detectDynamicCollision(dynamic_objs)
+	-- TODO: Check AABB collision against all dynamic objs
 	-- Hint: Use a for loop and create boxes for the player and the items.
 	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
 	local player_collider = player:getComponent("collider")
@@ -130,18 +143,17 @@ function csim_game.detectDynamicCollision()
 
 	csim_debug.rect(min_a.x, min_a.y, player_collider.rect.w, player_collider.rect.h)
 
-	for i=1,#enemies do
-		local enemy_collider = enemies[i]:getComponent("collider")
-		local min_b = csim_vector:new(enemies[i].pos.x + enemy_collider.rect.x,
-					enemies[i].pos.y + enemy_collider.rect.y)
+	for i=1,#dynamic_objs do
+		local enemy_collider = dynamic_objs[i]:getComponent("collider")
+		local min_b = csim_vector:new(dynamic_objs[i].pos.x + enemy_collider.rect.x,
+					dynamic_objs[i].pos.y + enemy_collider.rect.y)
 
-		local max_b = csim_vector:new(enemies[i].pos.x + enemy_collider.rect.x + enemy_collider.rect.w,
-					enemies[i].pos.y + enemy_collider.rect.y + enemy_collider.rect.h)
+		local max_b = csim_vector:new(dynamic_objs[i].pos.x + enemy_collider.rect.x + enemy_collider.rect.w,
+					dynamic_objs[i].pos.y + enemy_collider.rect.y + enemy_collider.rect.h)
 
 		csim_debug.rect(min_b.x, min_b.y, enemy_collider.rect.w, enemy_collider.rect.h)
 
 		if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
-			print("asdas")
 			csim_debug.text("yay yay yay!")
 		end
 	end
@@ -175,7 +187,8 @@ function csim_game.update(dt)
 	-- TODO: Clamp acceleration
 	player_rigid_body.vel.x = csim_math.clamp(player_rigid_body.vel.x, -5, 5)
 
-	csim_game.detectDynamicCollision()
+	csim_game.detectDynamicCollision(items)
+	csim_game.detectDynamicCollision(enemies)
 
 	-- Camera is following the player
 	csim_camera.setPosition(player.pos.x - csim_game.game_width/2, player.pos.y - csim_game.game_height/2)
