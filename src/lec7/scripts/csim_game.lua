@@ -123,22 +123,22 @@ function csim_game.detectDynamicCollision()
 	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
 	local player_collider = player:getComponent("collider")
 	local min_a = csim_vector:new(player.pos.x + player_collider.rect.x,
-					player.pos.y + player_collider.rect.y + player_collider.rect.h)
-
-	local max_a = csim_vector:new(player.pos.x + player_collider.rect.x + player_collider.rect.w,
 					player.pos.y + player_collider.rect.y)
 
-	csim_debug.rect(min_a.x, max_a.y, player_collider.rect.w, player_collider.rect.h)
+	local max_a = csim_vector:new(player.pos.x + player_collider.rect.x + player_collider.rect.w,
+					player.pos.y + player_collider.rect.y + player_collider.rect.h)
+
+	csim_debug.rect(min_a.x, min_a.y, player_collider.rect.w, player_collider.rect.h)
 
 	for i=1,#enemies do
 		local enemy_collider = enemies[i]:getComponent("collider")
 		local min_b = csim_vector:new(enemies[i].pos.x + enemy_collider.rect.x,
-					enemies[i].pos.y + enemy_collider.rect.y + enemy_collider.rect.h)
-
-		local max_b = csim_vector:new(enemies[i].pos.x + enemy_collider.rect.x + enemy_collider.rect.w,
 					enemies[i].pos.y + enemy_collider.rect.y)
 
-		csim_debug.rect(min_b.x, max_b.y, enemy_collider.rect.w, enemy_collider.rect.h)
+		local max_b = csim_vector:new(enemies[i].pos.x + enemy_collider.rect.x + enemy_collider.rect.w,
+					enemies[i].pos.y + enemy_collider.rect.y + enemy_collider.rect.h)
+
+		csim_debug.rect(min_b.x, min_b.y, enemy_collider.rect.w, enemy_collider.rect.h)
 
 		if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
 			print("asdas")

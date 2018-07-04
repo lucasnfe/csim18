@@ -17,13 +17,11 @@ end
 
 function csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
     -- TODO: Implement AABB vs AABB collision detection
-    if(max_a.x < min_b.x or max_b.x < min_a.x) then
-        print("one false")
+    if((max_a.x < min_b.x) or (max_b.x < min_a.x)) then
         return false
     end
 
     if(max_a.y < min_b.y or max_b.y < min_a.y) then
-        print("two false")
         return false
     end
 
