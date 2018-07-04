@@ -33,14 +33,20 @@ function csim_rigidbody:applyForce(f)
     self.acc:add(f)
 end
 
-function csim_rigidbody:apply_friction(u)
+function csim_rigidbody:applyFriction(u)
     -- TODO: Implement friction with the ground
-    -- Hint: F = -1 * u * N * v.norm()
+    -- Hint: F = -1 * u * v:norm()
+    local f = csim_vector:new(self.vel.x, self.vel.y)
+    if(f:mag() < 0.01) then return end
+
+    f:norm()
+    f:mul(-1 * u)
+    self:applyForce(f)
 end
 
-function csim_rigidbody:apply_resistance(c_d)
+function csim_rigidbody:applyResistance(c_d)
     -- TODO: Implement friction with the ground
-    -- Hint: F = v.mag()^2 * c_d * v.norm()
+    -- Hint: F = v:mag()^2 * c_d * v:norm()
 end
 
 function csim_rigidbody:update(dt)

@@ -47,8 +47,8 @@ end
 function csim_vector:norm()
     -- TODO: Use your magnitude fucntion to calculate magnitude
     -- and Divide self.x, self.y by it.
-    local mag = self.mag()
-    self.div(mag)
+    local mag = self:mag()
+    self:div(mag)
 end
 
 return csim_vector

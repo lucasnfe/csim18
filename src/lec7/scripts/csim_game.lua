@@ -31,6 +31,12 @@ function csim_game.load()
 	-- Load characters
 	player, enemies = csim_game.loadCharacters()
 
+	-- Adding collider to enemies
+	for i=1,#enemies do
+		local enemy_collider = csim_collider:new(map, enemies[i].rect)
+		enemies[i]:addComponent(enemy_collider)
+	end
+
 	-- Load items
 	items = csim_game.loadItems()
 
@@ -71,6 +77,13 @@ function csim_game.loadCharacters()
 					player.rect.h = map_data[y][x].properties["h"]
 				else
 					enemy = csim_object:new(screen_y, screen_x, 0, spr)
+
+					enemy.rect = {}
+					enemy.rect.x = map_data[y][x].properties["x"]
+					enemy.rect.y = map_data[y][x].properties["y"]
+					enemy.rect.w = map_data[y][x].properties["w"]
+					enemy.rect.h = map_data[y][x].properties["h"]
+
 					table.insert(enemies, enemy)
 				end
 			end
@@ -104,6 +117,36 @@ function csim_game.loadItems()
 	return items
 end
 
+function csim_game.detectDynamicCollision()
+	-- TODO: Check AABB collision against all items
+	-- Hint: Use a for loop and create boxes for the player and the items.
+	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
+	local player_collider = player:getComponent("collider")
+	local min_a = csim_vector:new(player.pos.x + player_collider.rect.x,
+					player.pos.y + player_collider.rect.y + player_collider.rect.h)
+
+	local max_a = csim_vector:new(player.pos.x + player_collider.rect.x + player_collider.rect.w,
+					player.pos.y + player_collider.rect.y)
+
+	csim_debug.rect(min_a.x, max_a.y, player_collider.rect.w, player_collider.rect.h)
+
+	for i=1,#enemies do
+		local enemy_collider = enemies[i]:getComponent("collider")
+		local min_b = csim_vector:new(enemies[i].pos.x + enemy_collider.rect.x,
+					enemies[i].pos.y + enemy_collider.rect.y + enemy_collider.rect.h)
+
+		local max_b = csim_vector:new(enemies[i].pos.x + enemy_collider.rect.x + enemy_collider.rect.w,
+					enemies[i].pos.y + enemy_collider.rect.y)
+
+		csim_debug.rect(min_b.x, max_b.y, enemy_collider.rect.w, enemy_collider.rect.h)
+
+		if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
+			print("asdas")
+			csim_debug.text("yay yay yay!")
+		end
+	end
+end
+
 function csim_game.update(dt)
 	-- Move on x axis
 	if (love.keyboard.isDown('left')) then
@@ -112,9 +155,6 @@ function csim_game.update(dt)
 	elseif(love.keyboard.isDown('right')) then
 		player:move(1)
 		love.audio.play(sounds["step"])
-	else
-		-- "Friction"
-		player:getComponent("rigidbody").vel.x = 0
 	end
 
 	-- Move on y axis
@@ -125,14 +165,17 @@ function csim_game.update(dt)
 
 	player:update(dt)
 
-	-- TODO: Check AABB collision against all items
-	-- Hint: Use a for loop and create boxes for the player and the items.
-	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
+	local player_rigid_body = player:getComponent("rigidbody")
 
+	-- TODO: Apply friction
+	if(player.is_on_ground) then
+		player_rigid_body:applyFriction(0.05)
+	end
 
-	-- TODO: Check AABB collision against all enemies
-	-- Hint: Use a for loop and create boxes for the player and the enemies.
-	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
+	-- TODO: Clamp acceleration
+	player_rigid_body.vel.x = csim_math.clamp(player_rigid_body.vel.x, -5, 5)
+
+	csim_game.detectDynamicCollision()
 
 	-- Camera is following the player
 	csim_camera.setPosition(player.pos.x - csim_game.game_width/2, player.pos.y - csim_game.game_height/2)

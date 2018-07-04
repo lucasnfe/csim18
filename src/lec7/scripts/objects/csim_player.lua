@@ -25,6 +25,7 @@ end
 
 function csim_player:onHorizontalCollision(tile, horiz_side)
     -- TODO: Apply friction if is on the ground
+    csim_debug.text("yay!") 
 end
 
 function csim_player:onHorizontalTriggerCollision(tile, horiz_side)

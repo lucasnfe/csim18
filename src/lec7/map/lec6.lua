@@ -157,7 +157,41 @@ return {
         {
           id = 8,
           properties = {
-            ["sprite"] = "sprites/lec6-worm.png"
+            ["h"] = 32,
+            ["sprite"] = "sprites/lec6-worm.png",
+            ["w"] = 64,
+            ["x"] = 0,
+            ["y"] = 32
+          },
+          objectGroup = {
+            type = "objectgroup",
+            name = "",
+            visible = true,
+            opacity = 1,
+            offsetx = 0,
+            offsety = 0,
+            draworder = "index",
+            properties = {},
+            objects = {
+              {
+                id = 1,
+                name = "",
+                type = "",
+                shape = "rectangle",
+                x = 0,
+                y = 32,
+                width = 63,
+                height = 32,
+                rotation = 0,
+                visible = true,
+                properties = {
+                  ["h"] = 32,
+                  ["w"] = 64,
+                  ["x"] = 0,
+                  ["y"] = 32
+                }
+              }
+            }
           }
         }
       }
