@@ -10,7 +10,7 @@
 local csim_vector = require "scripts.csim_vector"
 
 local csim_collider = {}
-local SKIN = 0.1
+local SKIN = 0.01
 
 function csim_collider:new(map, rect)
     local comp = {}
@@ -23,16 +23,9 @@ function csim_collider:new(map, rect)
     return comp
 end
 
-function csim_collider:update(dt)
-    parent_rigid_body = self.parent:getComponent("rigidbody")
-    if(parent_rigid_body == nil) then return end
+function csim_collider:udpateHorizontal()
+    local parent_rigid_body = self.parent:getComponent("rigidbody")
 
-    self:updateVertical(dt)
-
-    self:udpateHorizontal(dt)
-end
-
-function csim_collider:udpateHorizontal(dt)
     local horiz_side = 1
     if(parent_rigid_body.vel.x < 0) then
         horiz_side = -1
@@ -65,7 +58,9 @@ function csim_collider:udpateHorizontal(dt)
     end
 end
 
-function csim_collider:updateVertical(dt)
+function csim_collider:updateVertical()
+    local parent_rigid_body = self.parent:getComponent("rigidbody")
+
     local vert_side = 1
     if(parent_rigid_body.vel.y < 0) then
         vert_side = -1
@@ -112,7 +107,6 @@ function csim_collider:detectVerticalCollision(tile_x, tile_y, vert_side)
     if map_data[tile_y+1] and map_data[tile_y+1][tile_x+1] then
         local tile = map_data[tile_y+1][tile_x+1]
 
-        -- TODO: Check if the tile has property "collide", then return true
         if (tile) then
             if(tile.properties["trigger"]) then
                 -- Callback function
@@ -121,6 +115,7 @@ function csim_collider:detectVerticalCollision(tile_x, tile_y, vert_side)
                 end
             end
 
+            -- TODO: Check if the tile has property "collide", then return true
             if(tile.properties["collide"]) then
                 -- Callback function
                 if(self.parent.onVerticalCollision) then
@@ -136,6 +131,8 @@ function csim_collider:detectVerticalCollision(tile_x, tile_y, vert_side)
 end
 
 function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
+    local parent_rigid_body = self.parent:getComponent("rigidbody")
+
     -- TODO: Set y component of velocity to zero
     parent_rigid_body.vel.y = 0
 
@@ -147,7 +144,7 @@ function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
     end
 
     screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y - extra_height * vert_side)
-    self.parent.pos.y = screen_y - SKIN * vert_side
+    self.parent.pos.y = screen_y
     if(vert_side == -1) then
         self.parent.pos.y = self.parent.pos.y - self.rect.y
     end
@@ -160,7 +157,6 @@ function csim_collider:detectHorizontalCollision(tile_x, tile_y, horiz_side)
     if map_data[tile_y+1] and map_data[tile_y+1][tile_x+1] then
         local tile = map_data[tile_y+1][tile_x+1]
 
-        -- TODO: Check if the tile has property "collide", then return true
         if(tile) then
             if(tile.properties["trigger"]) then
                 -- Callback function
@@ -169,6 +165,7 @@ function csim_collider:detectHorizontalCollision(tile_x, tile_y, horiz_side)
                 end
             end
 
+            -- TODO: Check if the tile has property "collide", then return true
             if(tile.properties["collide"]) then
                 -- Callback function
                 if(self.parent.onHorizontalCollision) then
@@ -184,6 +181,8 @@ function csim_collider:detectHorizontalCollision(tile_x, tile_y, horiz_side)
 end
 
 function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
+    local parent_rigid_body = self.parent:getComponent("rigidbody")
+
     -- TODO: Set x component of velocity to zero
     parent_rigid_body.vel.x = 0
 
@@ -191,7 +190,13 @@ function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
     -- Hint: use map:convertTileToPixel
     local extra_width = math.ceil(self.rect.w/map.tilewidth)
     screen_x, screen_y = map:convertTileToPixel(tile_x - horiz_side * extra_width, tile_y)
-    self.parent.pos.x = screen_x - SKIN * horiz_side
+    self.parent.pos.x = screen_x
+end
+
+function csim_collider:createAABB()
+    local min = csim_vector:new(self.parent.pos.x + self.rect.x, self.parent.pos.y + self.rect.y)
+    local max = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w, self.parent.pos.y + self.rect.y + self.rect.h)
+    return min,max
 end
 
 return csim_collider

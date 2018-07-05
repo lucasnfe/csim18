@@ -36,12 +36,12 @@ end
 function csim_rigidbody:applyFriction(u)
     -- TODO: Implement friction with the ground
     -- Hint: F = -1 * u * v:norm()
-    local f = csim_vector:new(self.vel.x, self.vel.y)
-    if(f:mag() < 0.01) then return end
-
-    f:norm()
-    f:mul(-1 * u)
-    self:applyForce(f)
+    if(math.abs(self.vel.x) > 0) then
+        local f = csim_vector:new(self.vel.x, self.vel.y)
+        f:norm()
+        f:mul(-1 * u)
+        self:applyForce(f)
+    end
 end
 
 function csim_rigidbody:applyResistance(c_d)
@@ -57,6 +57,19 @@ function csim_rigidbody:update(dt)
 
     -- TODO: Sum acc to self.vel
     self.vel:add(self.acc)
+
+    local collider = self.parent:getComponent("collider")
+    if(collider) then
+        -- TODO: Check for horizontal collision
+        collider:updateVertical()
+
+        -- TODO: Check for vertical collision
+        collider:udpateHorizontal()
+    end
+
+    -- TODO: Set vel to zero if it less than a short trashold
+    if(math.abs(self.vel.x) < 0.1) then self.vel.x = 0 end
+    if(math.abs(self.vel.y) < 0.1) then self.vel.y = 0 end
 
     -- TODO: Sum self.vel to self.parent.pos
     self.parent.pos:add(self.vel)

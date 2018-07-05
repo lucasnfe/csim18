@@ -47,7 +47,7 @@ function csim_game.load()
 	end
 
 	-- Create rigid body
-	local player_rigid_body = csim_rigidbody:new(1, 0.1, 6)
+	local player_rigid_body = csim_rigidbody:new(1, 1, 12)
 	player:addComponent(player_rigid_body)
 
 	-- Create collider
@@ -135,21 +135,13 @@ function csim_game.detectDynamicCollision(dynamic_objs)
 	-- Hint: Use a for loop and create boxes for the player and the items.
 	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
 	local player_collider = player:getComponent("collider")
-	local min_a = csim_vector:new(player.pos.x + player_collider.rect.x,
-					player.pos.y + player_collider.rect.y)
-
-	local max_a = csim_vector:new(player.pos.x + player_collider.rect.x + player_collider.rect.w,
-					player.pos.y + player_collider.rect.y + player_collider.rect.h)
+	min_a, max_a = player_collider:createAABB()
 
 	csim_debug.rect(min_a.x, min_a.y, player_collider.rect.w, player_collider.rect.h)
 
 	for i=1,#dynamic_objs do
 		local enemy_collider = dynamic_objs[i]:getComponent("collider")
-		local min_b = csim_vector:new(dynamic_objs[i].pos.x + enemy_collider.rect.x,
-					dynamic_objs[i].pos.y + enemy_collider.rect.y)
-
-		local max_b = csim_vector:new(dynamic_objs[i].pos.x + enemy_collider.rect.x + enemy_collider.rect.w,
-					dynamic_objs[i].pos.y + enemy_collider.rect.y + enemy_collider.rect.h)
+		min_b, max_b = enemy_collider:createAABB()
 
 		csim_debug.rect(min_b.x, min_b.y, enemy_collider.rect.w, enemy_collider.rect.h)
 
@@ -181,7 +173,7 @@ function csim_game.update(dt)
 
 	-- TODO: Apply friction
 	if(player.is_on_ground) then
-		player_rigid_body:applyFriction(0.05)
+		player_rigid_body:applyFriction(0.25)
 	end
 
 	-- TODO: Clamp acceleration
