@@ -138,15 +138,11 @@ function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
 
     -- TODO: Set rigidbody y position to be the tile y pos
     -- Hint: use map:convertTileToPixel
-    local extra_height = math.ceil(self.rect.h/map.tileheight)
+    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y)
     if(vert_side == -1) then
-        extra_height = 1
-    end
-
-    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y - extra_height * vert_side)
-    self.parent.pos.y = screen_y
-    if(vert_side == -1) then
-        self.parent.pos.y = self.parent.pos.y - self.rect.y
+        self.parent.pos.y = screen_y + map.tileheight - self.rect.y
+    elseif(vert_side == 1) then
+        self.parent.pos.y = screen_y - self.rect.y - self.rect.h
     end
 end
 
@@ -188,9 +184,12 @@ function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
 
     -- TODO: Set rigidbody x position to be the tile x pos
     -- Hint: use map:convertTileToPixel
-    local extra_width = math.ceil(self.rect.w/map.tilewidth)
-    screen_x, screen_y = map:convertTileToPixel(tile_x - horiz_side * extra_width, tile_y)
-    self.parent.pos.x = screen_x
+    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y)
+    if(horiz_side == -1) then
+        self.parent.pos.x = screen_x + map.tilewidth - self.rect.x
+    elseif(horiz_side == 1) then
+        self.parent.pos.x = screen_x - self.rect.x - self.rect.w
+    end
 end
 
 function csim_collider:createAABB()

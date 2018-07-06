@@ -36,7 +36,6 @@ end
 function csim_fsm:changeState(new_state)
     -- TODO: Call the exit function if it exists
 
-
     -- TODO: If new state exist in the table
     -- 1. Set current state to be the new one
     -- 2. Reset timer and call the
