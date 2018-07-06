@@ -45,7 +45,9 @@ function csim_game.load()
 		-- Adding fsms to enemies
 		local states = {}
 		states["move"] = csim_fsm:newState("move", enemies[i].update_move_state, enemies[i].enter_move_state, enemies[i].exit_move_state)
-		local enemy_fsm = csim_fsm:new(states, "move", csim_enemy)
+		states["idle"] = csim_fsm:newState("idle", enemies[i].update_idle_state, enemies[i].enter_idle_state, enemies[i].exit_idle_state)
+
+		local enemy_fsm = csim_fsm:new(states, "move")
 		enemies[i]:addComponent(enemy_fsm)
 	end
 
