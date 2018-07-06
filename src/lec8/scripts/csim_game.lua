@@ -18,6 +18,7 @@ local csim_enemy = require "scripts.objects.csim_enemy"
 -- Loading internal libraries
 local csim_math = require "scripts.csim_math"
 local csim_vector = require "scripts.csim_vector"
+local csim_level_parser = require "scripts.csim_level_parser"
 
 -- Loading components
 local csim_rigidbody = require "scripts.components.csim_rigidbody"
@@ -30,42 +31,26 @@ function csim_game.load()
 	-- Load map
 	map = sti("map/lec6.lua")
 
+	-- Load level parser
+	level_parser = csim_level_parser:new(map)
+
 	-- Load characters
-	player, enemies = csim_game.loadCharacters()
+	player, enemies = level_parser:loadCharacters("Characters")
+	if(player == nil) then
+		print("Player could not be loaded.")
+		love.event.quit()
+	end
 
 	for i=1,#enemies do
-		-- Adding collider to enemies
-		local enemy_collider = csim_collider:new(map, enemies[i].rect)
-		enemies[i]:addComponent(enemy_collider)
-
-		-- Adding rigidbody to enemies
-		local enemy_rigid_body = csim_rigidbody:new(1, 1, 12)
-		enemies[i]:addComponent(enemy_rigid_body)
-
 		-- Adding fsms to enemies
 		local states = {}
 		states["move"] = csim_fsm:newState("move", enemies[i].update_move_state, enemies[i].enter_move_state, enemies[i].exit_move_state)
-
 		local enemy_fsm = csim_fsm:new(states, "move", csim_enemy)
 		enemies[i]:addComponent(enemy_fsm)
 	end
 
 	-- Load items
-	items = csim_game.loadItems()
-
-	-- Adding collider to coins
-	for i=1,#items do
-		local item_collider = csim_collider:new(map, items[i].rect)
-		items[i]:addComponent(item_collider)
-	end
-
-	-- Create rigid body
-	local player_rigid_body = csim_rigidbody:new(1, 1, 12)
-	player:addComponent(player_rigid_body)
-
-	-- Create collider
-	local player_collider = csim_collider:new(map, player.rect)
-	player:addComponent(player_collider)
+	items = level_parser:loadItems("Items")
 
 	-- Load step sound
 	sounds = {}
@@ -73,93 +58,28 @@ function csim_game.load()
 	sounds["coin"]=love.audio.newSource("sounds/lec2-coin.wav", "static")
 end
 
-function csim_game.loadCharacters()
-	local player = nil
-	local enemies = {}
-
-	local width = map.layers["Characters"].width
-	local height = map.layers["Characters"].height
-	local map_data = map.layers["Characters"].data
-
-	for x=1,width do
-		for y=1,height do
-			if map_data[y] and map_data[y][x] then
-				local spr = love.graphics.newImage(map_data[y][x].properties["sprite"])
-				screen_x, screen_y = map:convertTileToPixel(y - 1, x - 1)
-
-				if(map_data[y][x].properties["isPlayer"]) then
-					player = csim_player:new(screen_y, screen_x, 0, spr)
-					player.rect = {}
-					player.rect.x = map_data[y][x].properties["x"]
-					player.rect.y = map_data[y][x].properties["y"]
-					player.rect.w = map_data[y][x].properties["w"]
-					player.rect.h = map_data[y][x].properties["h"]
-				else
-					local enemy = csim_enemy:new(screen_y, screen_x, 0, spr)
-
-					enemy.rect = {}
-					enemy.rect.x = map_data[y][x].properties["x"]
-					enemy.rect.y = map_data[y][x].properties["y"]
-					enemy.rect.w = map_data[y][x].properties["w"]
-					enemy.rect.h = map_data[y][x].properties["h"]
-
-					table.insert(enemies, enemy)
-				end
-			end
-		end
-	end
-
-	map:removeLayer("Characters")
-	return player, enemies
-end
-
-function csim_game.loadItems()
-	local items = {}
-
-	local width = map.layers["Items"].width
-	local height = map.layers["Items"].height
-	local map_data = map.layers["Items"].data
-
-	for x=1,width do
-		for y=1,height do
-			if map_data[y] and map_data[y][x] then
-				local spr = love.graphics.newImage(map_data[y][x].properties["sprite"])
-				screen_x, screen_y = map:convertTileToPixel(y - 1, x - 1)
-
-				local item = csim_object:new(screen_y, screen_x, 0, spr)
-
-				item.rect = {}
-				item.rect.x = map_data[y][x].properties["x"]
-				item.rect.y = map_data[y][x].properties["y"]
-				item.rect.w = map_data[y][x].properties["w"]
-				item.rect.h = map_data[y][x].properties["h"]
-
-				table.insert(items, item)
-			end
-		end
-	end
-
-	map:removeLayer("Items")
-	return items
-end
-
 function csim_game.detectDynamicCollision(dynamic_objs)
 	-- TODO: Check AABB collision against all dynamic objs
 	-- Hint: Use a for loop and create boxes for the player and the items.
 	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
 	local player_collider = player:getComponent("collider")
+	if (not player_collider) then return end
+
 	min_a, max_a = player_collider:createAABB()
 
 	csim_debug.rect(min_a.x, min_a.y, player_collider.rect.w, player_collider.rect.h)
 
 	for i=1,#dynamic_objs do
-		local enemy_collider = dynamic_objs[i]:getComponent("collider")
-		min_b, max_b = enemy_collider:createAABB()
+		local dynamic_collider = dynamic_objs[i]:getComponent("collider")
 
-		csim_debug.rect(min_b.x, min_b.y, enemy_collider.rect.w, enemy_collider.rect.h)
+		if (dynamic_collider) then
+			min_b, max_b = dynamic_collider:createAABB()
 
-		if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
-			csim_debug.text("yay yay yay!")
+			csim_debug.rect(min_b.x, min_b.y, dynamic_collider.rect.w, dynamic_collider.rect.h)
+
+			if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
+				csim_debug.text("yay yay yay!")
+			end
 		end
 	end
 end
@@ -199,8 +119,10 @@ function csim_game.update(dt)
 	csim_camera.setPosition(player.pos.x - csim_game.game_width/2, player.pos.y - csim_game.game_height/2)
 
 	-- Set background color
-	love.graphics.setBackgroundColor(map.backgroundcolor[1]/255,
-		map.backgroundcolor[2]/255, map.backgroundcolor[3]/255)
+	if(map.backgroundcolor) then
+		love.graphics.setBackgroundColor(map.backgroundcolor[1]/255,
+			map.backgroundcolor[2]/255, map.backgroundcolor[3]/255)
+	end
 end
 
 function csim_game.draw()

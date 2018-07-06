@@ -3,12 +3,10 @@
  <image source="lec6-5.png" trans="ff00ff" width="512" height="1024"/>
  <tile id="44">
   <properties>
-   <property name="h" type="float" value="78"/>
-   <property name="isPlayer" type="bool" value="true"/>
    <property name="sprite" value="sprites/lec4-player.png"/>
-   <property name="w" type="float" value="64"/>
-   <property name="x" type="float" value="0"/>
-   <property name="y" type="float" value="50"/>
   </properties>
+  <objectgroup draworder="index">
+   <object id="1" type="Player" x="0" y="50" width="64" height="78"/>
+  </objectgroup>
  </tile>
 </tileset>
