@@ -32,14 +32,10 @@ function csim_game.load()
 	map = sti("map/lec6.lua")
 
 	-- Load level parser
-	level_parser = csim_level_parser:new(map)
+	level_parser = csim_level_parser(map)
 
 	-- Load characters
 	player, enemies = level_parser:loadCharacters("Characters")
-	if(player == nil) then
-		print("Player could not be loaded.")
-		love.event.quit()
-	end
 
 	for i=1,#enemies do
 		-- Adding fsms to enemies
@@ -47,7 +43,7 @@ function csim_game.load()
 		states["move"] = csim_fsm:newState("move", enemies[i].update_move_state, enemies[i].enter_move_state, enemies[i].exit_move_state)
 		states["idle"] = csim_fsm:newState("idle", enemies[i].update_idle_state, enemies[i].enter_idle_state, enemies[i].exit_idle_state)
 
-		local enemy_fsm = csim_fsm:new(states, "move")
+		local enemy_fsm = csim_fsm(states, "move")
 		enemies[i]:addComponent(enemy_fsm)
 	end
 
@@ -61,11 +57,10 @@ function csim_game.load()
 end
 
 function csim_game.detectDynamicCollision(dynamic_objs)
-	-- TODO: Check AABB collision against all dynamic objs
-	-- Hint: Use a for loop and create boxes for the player and the items.
-	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
 	local player_collider = player:getComponent("collider")
-	if (not player_collider) then return end
+	if (not player_collider) then
+		return
+	end
 
 	min_a, max_a = player_collider:createAABB()
 
@@ -87,38 +82,26 @@ function csim_game.detectDynamicCollision(dynamic_objs)
 end
 
 function csim_game.update(dt)
-	-- Move on x axis
-	if (love.keyboard.isDown('left')) then
-		player:move(-1)
-		love.audio.play(sounds["step"])
-	elseif(love.keyboard.isDown('right')) then
-		player:move(1)
-		love.audio.play(sounds["step"])
-	end
-
-	-- Move on y axis
-	if (love.keyboard.isDown('up') and player.is_on_ground) then
-		player:jump()
-		love.audio.play(sounds["step"])
-	end
-
-	if(player.is_on_ground) then
-		player:getComponent("rigidbody"):applyFriction(0.25)
-	end
-
 	-- Update characters
-	player:update(dt)
+	if(player) then
+		player:update(dt)
+	end
 
 	for i=1,#enemies do
 		enemies[i]:update(dt)
 	end
 
 	-- Detect collision against dynamic objects
-	csim_game.detectDynamicCollision(items)
-	csim_game.detectDynamicCollision(enemies)
+	if(player) then
+		csim_game.detectDynamicCollision(items)
+		csim_game.detectDynamicCollision(enemies)
+	end
 
 	-- Camera is following the player
-	csim_camera.setPosition(player.pos.x - csim_game.game_width/2, player.pos.y - csim_game.game_height/2)
+	if(player) then
+		camera:setPosition(player.pos.x - csim_game.game_width/2,
+			player.pos.y - csim_game.game_height/2)
+	end
 
 	-- Set background color
 	if(map.backgroundcolor) then
@@ -129,10 +112,13 @@ end
 
 function csim_game.draw()
 	-- Draw map
-	map:draw(-csim_camera.x, -csim_camera.y)
+	print(camera.pos.x)
+	map:draw(-camera.pos.x, -camera.pos.y)
 
 	-- Draw the player sprite
-	love.graphics.draw(player.spr, player.pos.x, player.pos.y)
+	if(player) then
+		love.graphics.draw(player.spr, player.pos.x, player.pos.y)
+	end
 
 	-- Draw items
 	for i=1,#items do

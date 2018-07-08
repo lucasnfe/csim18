@@ -56,7 +56,7 @@ function csim_debug.rect(x, y, w, h)
     end
 end
 
-function csim_debug.draw()
+function csim_debug.draw(camera_pos)
     if (csim_debug.show_console == false) then return end
 
     -- Save graphics state
@@ -85,7 +85,7 @@ function csim_debug.draw()
 
     -- Draw debug rects
     for rect_pos,rect in pairs(csim_debug.rects) do
-        love.graphics.rectangle("line", rect.x - csim_camera.x, rect.y - csim_camera.y, rect.w, rect.h)
+        love.graphics.rectangle("line", rect.x - camera_pos.x, rect.y - camera_pos.y, rect.w, rect.h)
     end
 
     -- Draw debug mode

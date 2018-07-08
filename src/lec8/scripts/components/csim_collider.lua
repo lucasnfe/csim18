@@ -9,18 +9,14 @@
 
 local csim_vector = require "scripts.csim_vector"
 
-local csim_collider = {}
+local csim_collider = class()
 local SKIN = 0.01
 
-function csim_collider:new(map, rect)
-    local comp = {}
-    comp.map = map
-    comp.name = "collider"
-    comp.parent = nil
-    comp.rect = rect
-    setmetatable(comp, self)
-    self.__index = self
-    return comp
+function csim_collider:init(map, rect)
+    self.map = map
+    self.name = "collider"
+    self.parent = nil
+    self.rect = rect
 end
 
 function csim_collider:udpateHorizontal()
@@ -31,15 +27,15 @@ function csim_collider:udpateHorizontal()
         horiz_side = -1
     end
 
-    local col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w,
+    local col_pos1 = csim_vector(self.parent.pos.x + self.rect.x + self.rect.w,
                         self.parent.pos.y + self.rect.y + SKIN)
-    local col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w,
+    local col_pos2 = csim_vector(self.parent.pos.x + self.rect.x + self.rect.w,
                         self.parent.pos.y + self.rect.y + self.rect.h - SKIN)
 
     if(horiz_side == -1) then
-        col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x,
+        col_pos1 = csim_vector(self.parent.pos.x + self.rect.x,
                             self.parent.pos.y + self.rect.y + SKIN)
-        col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x,
+        col_pos2 = csim_vector(self.parent.pos.x + self.rect.x,
                             self.parent.pos.y + self.rect.y + self.rect.h - SKIN)
     end
 
@@ -66,15 +62,15 @@ function csim_collider:updateVertical()
         vert_side = -1
     end
 
-    local col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x + SKIN,
+    local col_pos1 = csim_vector(self.parent.pos.x + self.rect.x + SKIN,
                         self.parent.pos.y + self.rect.y + self.rect.h)
-    local col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w - SKIN,
+    local col_pos2 = csim_vector(self.parent.pos.x + self.rect.x + self.rect.w - SKIN,
                         self.parent.pos.y + self.rect.y + self.rect.h)
 
     if(vert_side == -1) then
-        col_pos1 = csim_vector:new(self.parent.pos.x + self.rect.x + SKIN,
+        col_pos1 = csim_vector(self.parent.pos.x + self.rect.x + SKIN,
                             self.parent.pos.y + self.rect.y)
-        col_pos2 = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w - SKIN,
+        col_pos2 = csim_vector(self.parent.pos.x + self.rect.x + self.rect.w - SKIN,
                             self.parent.pos.y + self.rect.y)
     end
 
@@ -193,8 +189,8 @@ function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
 end
 
 function csim_collider:createAABB()
-    local min = csim_vector:new(self.parent.pos.x + self.rect.x, self.parent.pos.y + self.rect.y)
-    local max = csim_vector:new(self.parent.pos.x + self.rect.x + self.rect.w, self.parent.pos.y + self.rect.y + self.rect.h)
+    local min = csim_vector(self.parent.pos.x + self.rect.x, self.parent.pos.y + self.rect.y)
+    local max = csim_vector(self.parent.pos.x + self.rect.x + self.rect.w, self.parent.pos.y + self.rect.y + self.rect.h)
     return min,max
 end
 

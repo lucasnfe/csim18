@@ -7,18 +7,13 @@
     lferreira@ucsc.edu
 ]]
 
-local csim_fsm = {}
+local csim_fsm = class()
 
-function csim_fsm:new(states, s_state)
-    local comp = {}
-    comp.c_state = s_state
-    comp.states = states
-    comp.name = "fsm"
-    comp.parent = nil
-
-    setmetatable(comp, self)
-    self.__index = self
-    return comp
+function csim_fsm:init(states, s_state)
+    self.c_state = s_state
+    self.states = states
+    self.name = "fsm"
+    self.parent = nil
 end
 
 function csim_fsm:newState(name, f_update, f_enter, f_exit)
@@ -40,7 +35,6 @@ end
 
 function csim_fsm:update(dt)
     -- TODO: Call the current state update function if it exists
-    print("pos test = "..self.parent.pos.x)
     self.states[self.c_state].update(dt, self.states[self.c_state], self.parent)
 end
 

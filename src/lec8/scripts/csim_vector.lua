@@ -7,15 +7,11 @@
     lferreira@ucsc.edu
 ]]
 
-local csim_vector = {}
+local csim_vector = class()
 
-function csim_vector:new (x, y)
-    local v = {}
-    v.x = x
-    v.y = y
-    setmetatable(v, self)
-    self.__index = self
-    return v
+function csim_vector:init (x, y)
+    self.x = x
+    self.y = y
 end
 
 function csim_vector:add(v)
@@ -39,14 +35,10 @@ function csim_vector:div(s)
 end
 
 function csim_vector:mag()
-    -- TODO: use self.x and self.y to calculate the magnitude of the vector "self"
-    -- HINT: use math.sqrt()
     return math.sqrt(self.x*self.x + self.y*self.y)
 end
 
 function csim_vector:norm()
-    -- TODO: Use your magnitude fucntion to calculate magnitude
-    -- and Divide self.x, self.y by it.
     local mag = self:mag()
     self:div(mag)
 end

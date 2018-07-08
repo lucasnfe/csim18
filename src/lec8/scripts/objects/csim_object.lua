@@ -7,22 +7,15 @@
     lferreira@ucsc.edu
 ]]
 
-local csim_object = {}
-
 local csim_vector = require "scripts.csim_vector"
 
-function csim_object:new (x, y, rotation, spr)
-    local obj = {}
+local csim_object = class()
 
-    -- TODO: Remove the attributes x and y and use a vector to
-    -- represent position
-    obj.pos = csim_vector:new(x, y)
-    obj.rotation = rotation
-    obj.spr = spr
-    obj.components = {}
-    setmetatable(obj, self)
-    self.__index = self
-    return obj
+function csim_object:init (x, y, rotation, spr)
+    self.pos = csim_vector(x, y)
+    self.rotation = rotation
+    self.spr = spr
+    self.components = {}
 end
 
 function csim_object:setPosition(x, y)

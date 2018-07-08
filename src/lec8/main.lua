@@ -9,11 +9,12 @@
 
 -- Loading external libraries
 local push = require "lib.push"
+local sti = require "lib.class"
 
 -- Loading CSIM libraries
-csim_debug = require('scripts.csim_debug')
-csim_camera = require('scripts.csim_camera')
-csim_game = require('scripts.csim_game')
+csim_debug = require "scripts.csim_debug"
+csim_camera = require "scripts.csim_camera"
+csim_game = require "scripts.csim_game"
 
 -- Setting values of global variables
 csim_game.game_width = 1024
@@ -47,6 +48,9 @@ function love.load()
 	-- Load Debugger
 	csim_debug.init(csim_game.game_width, csim_game.game_height, csim_game.game_height/4, 20)
 
+	-- Load Camera
+	camera = csim_camera(0, 0)
+
 	-- Load Game
 	csim_game.load()
 end
@@ -69,16 +73,16 @@ function love.draw()
 	push:start()
 
 	-- Enable camera
-	csim_camera.start()
+	camera:start()
 
 	-- Draw game
 	csim_game.draw()
 
 	-- Disable camera
-	csim_camera.finish()
+	camera:finish()
 
 	-- Draw debugger
-	csim_debug.draw()
+	csim_debug.draw(camera.pos)
 
 	push:finish()
 end

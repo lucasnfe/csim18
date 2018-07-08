@@ -9,21 +9,17 @@
 
 local csim_vector = require "scripts.csim_vector"
 
-local csim_rigidbody = {}
+local csim_rigidbody = class()
 local GRAVITY = 9.8
 local MAX_SPEED = 5
 
-function csim_rigidbody:new(mass, speed_x, speed_y)
-    local comp = {}
-    comp.speed = csim_vector:new(speed_x, speed_y)
-    comp.vel = csim_vector:new(0,0)
-    comp.acc = csim_vector:new(0,0)
-    comp.mass = mass
-    comp.name = "rigidbody"
-    comp.parent = nil
-    setmetatable(comp, self)
-    self.__index = self
-    return comp
+function csim_rigidbody:init(mass, speed_x, speed_y)
+    self.speed = csim_vector(speed_x, speed_y)
+    self.vel = csim_vector(0,0)
+    self.acc = csim_vector(0,0)
+    self.mass = mass
+    self.name = "rigidbody"
+    self.parent = nil
 end
 
 function csim_rigidbody:applyForce(f)
@@ -37,11 +33,13 @@ end
 function csim_rigidbody:applyFriction(u)
     -- TODO: Implement friction with the ground
     -- Hint: F = -1 * u * v:norm()
-    if(math.abs(self.vel.x) > 0) then
-        local f = csim_vector:new(self.vel.x, self.vel.y)
+    if(self.vel:mag() > 0.1) then
+        local f = csim_vector(self.vel.x, self.vel.y)
         f:norm()
         f:mul(-1 * u)
         self:applyForce(f)
+    else
+        self.vel = csim_vector(0,0)
     end
 end
 
@@ -53,7 +51,7 @@ end
 function csim_rigidbody:update(dt)
     -- TODO: create a vector g (0,9.8) representing gravity
     -- using csim_vector:new()
-    local g = csim_vector:new(0, GRAVITY*0.05*self.mass)
+    local g = csim_vector(0, GRAVITY*0.05*self.mass)
     self:applyForce(g)
 
     -- TODO: Sum acc to self.vel
@@ -68,17 +66,13 @@ function csim_rigidbody:update(dt)
         collider:udpateHorizontal()
     end
 
-    -- TODO: Set vel to zero if it less than a short trashold
-    if(math.abs(self.vel.x) < 0.1) then self.vel.x = 0 end
-    if(math.abs(self.vel.y) < 0.1) then self.vel.y = 0 end
-
     self.vel.x = csim_math.clamp(self.vel.x, -MAX_SPEED, MAX_SPEED)
 
     -- TODO: Sum self.vel to self.parent.pos
     self.parent.pos:add(self.vel)
 
     -- TODO: set set self.acc to (0,0)
-    self.acc = csim_vector:new(0, 0)
+    self.acc = csim_vector(0, 0)
 end
 
 return csim_rigidbody

@@ -7,7 +7,7 @@
     lferreira@ucsc.edu
 ]]
 
-local csim_level_parser = {}
+local csim_level_parser = class()
 
 local csim_object = require "scripts.objects.csim_object"
 local csim_player = require "scripts.objects.csim_player"
@@ -16,12 +16,8 @@ local csim_enemy = require "scripts.objects.csim_enemy"
 local csim_collider = require "scripts.components.csim_collider"
 local csim_rigidbody = require "scripts.components.csim_rigidbody"
 
-function csim_level_parser:new(map)
-    local obj = {}
-    obj.map = map
-    setmetatable(obj, self)
-    self.__index = self
-    return obj
+function csim_level_parser:init(map)
+    self.map = map
 end
 
 function csim_level_parser:loadCharacters(characters_layer)
@@ -45,42 +41,14 @@ function csim_level_parser:loadCharacters(characters_layer)
 				screen_x, screen_y = self.map:convertTileToPixel(y - 1, x - 1)
 
 				if(map_data[y][x].objectGroup and map_data[y][x].objectGroup.objects[1].type == "Player") then
-					player = csim_player:new(screen_y, screen_x, 0, spr)
-
+					player = csim_player(screen_y, screen_x, 0, spr)
                     if(map_data[y][x].objectGroup.objects[1].shape == "rectangle") then
-                        local rect = {}
-                        rect.x = map_data[y][x].objectGroup.objects[1].x
-                        rect.y = map_data[y][x].objectGroup.objects[1].y
-                        rect.w = map_data[y][x].objectGroup.objects[1].width
-                        rect.h = map_data[y][x].objectGroup.objects[1].height
-
-                        -- Adding collider to player
-                        local collider = csim_collider:new(self.map, rect)
-                        player:addComponent(collider)
-
-                        print(player:getComponent("collider").rect.y)
-
-                        -- Adding rigidbody to player
-                        local rigid_body = csim_rigidbody:new(1, 1, 12)
-                        player:addComponent(rigid_body)
+                        self:loadSingleCharacter(map_data[y][x], player)
                     end
 				else
-					local enemy = csim_enemy:new(screen_y, screen_x, 0, spr)
-
+					local enemy = csim_enemy(screen_y, screen_x, 0, spr)
                     if(map_data[y][x].objectGroup and map_data[y][x].objectGroup.objects[1].shape == "rectangle") then
-                        local rect = {}
-                        rect.x = map_data[y][x].objectGroup.objects[1].x
-                        rect.y = map_data[y][x].objectGroup.objects[1].y
-                        rect.w = map_data[y][x].objectGroup.objects[1].width
-                        rect.h = map_data[y][x].objectGroup.objects[1].height
-
-                        -- Adding collider to enemy
-                        local collider = csim_collider:new(self.map, rect)
-                        enemy:addComponent(collider)
-
-                        -- Adding rigidbody to enemy
-                        local rigid_body = csim_rigidbody:new(1, 1, 1)
-                        enemy:addComponent(rigid_body)
+                        self:loadSingleCharacter(map_data[y][x], enemy)
                     end
 
 					table.insert(enemies, enemy)
@@ -91,6 +59,38 @@ function csim_level_parser:loadCharacters(characters_layer)
 
 	self.map:removeLayer(characters_layer)
 	return player, enemies
+end
+
+function csim_level_parser:loadSingleCharacter(tile, character)
+    local rect = {}
+    rect.x = tile.objectGroup.objects[1].x
+    rect.y = tile.objectGroup.objects[1].y
+    rect.w = tile.objectGroup.objects[1].width
+    rect.h = tile.objectGroup.objects[1].height
+
+    -- Adding collider
+    local collider = csim_collider(self.map, rect)
+    character:addComponent(collider)
+
+    -- Adding rigidbody
+    local speed_x = 1
+    local speed_y = 1
+    local mass = 1
+
+    if (tile.properties["mass"]) then
+        mass = tile.properties["mass"]
+    end
+
+    if (tile.properties["speed_x"]) then
+        speed_x = tile.properties["speed_x"]
+    end
+
+    if (tile.properties["speed_y"]) then
+        speed_y = tile.properties["speed_y"]
+    end
+
+    local rigid_body = csim_rigidbody(mass, speed_x, speed_y)
+    character:addComponent(rigid_body)
 end
 
 function csim_level_parser:loadItems(items_layer)
@@ -112,18 +112,9 @@ function csim_level_parser:loadItems(items_layer)
 				local spr = love.graphics.newImage(map_data[y][x].properties["sprite"])
 				screen_x, screen_y = self.map:convertTileToPixel(y - 1, x - 1)
 
-                local item = csim_object:new(screen_y, screen_x, 0, spr)
-
+                local item = csim_object(screen_y, screen_x, 0, spr)
                 if(map_data[y][x].objectGroup and map_data[y][x].objectGroup.objects[1].shape == "rectangle") then
-                    local rect = {}
-                    rect.x = map_data[y][x].objectGroup.objects[1].x
-                    rect.y = map_data[y][x].objectGroup.objects[1].y
-                    rect.w = map_data[y][x].objectGroup.objects[1].width
-                    rect.h = map_data[y][x].objectGroup.objects[1].height
-
-                    -- Adding collider to item
-                    local collider = csim_collider:new(self.map, rect)
-                    item:addComponent(collider)
+                    self:loadSingleItem(map_data[y][x], item)
                 end
 
 				table.insert(items, item)
@@ -133,6 +124,18 @@ function csim_level_parser:loadItems(items_layer)
 
 	self.map:removeLayer("Items")
 	return items
+end
+
+function csim_level_parser:loadSingleItem(tile, item)
+    local rect = {}
+    rect.x = tile.objectGroup.objects[1].x
+    rect.y = tile.objectGroup.objects[1].y
+    rect.w = tile.objectGroup.objects[1].width
+    rect.h = tile.objectGroup.objects[1].height
+
+    -- Adding collider to item
+    local collider = csim_collider(self.map, rect)
+    item:addComponent(collider)
 end
 
 return csim_level_parser

@@ -157,6 +157,9 @@ return {
         {
           id = 8,
           properties = {
+            ["mass"] = 1,
+            ["speed_x"] = 2,
+            ["speed_y"] = 0,
             ["sprite"] = "sprites/lec6-worm.png"
           },
           objectGroup = {
@@ -215,11 +218,32 @@ return {
         {
           id = 29,
           properties = {
-            ["h"] = 32,
-            ["sprite"] = "sprites/lec4-coin.png",
-            ["w"] = 32,
-            ["x"] = 16,
-            ["y"] = 16
+            ["sprite"] = "sprites/lec4-coin.png"
+          },
+          objectGroup = {
+            type = "objectgroup",
+            name = "",
+            visible = true,
+            opacity = 1,
+            offsetx = 0,
+            offsety = 0,
+            draworder = "index",
+            properties = {},
+            objects = {
+              {
+                id = 1,
+                name = "",
+                type = "",
+                shape = "rectangle",
+                x = 16,
+                y = 16,
+                width = 32,
+                height = 32,
+                rotation = 0,
+                visible = true,
+                properties = {}
+              }
+            }
           }
         }
       }
@@ -252,6 +276,9 @@ return {
         {
           id = 44,
           properties = {
+            ["mass"] = 1,
+            ["speed_x"] = 1,
+            ["speed_y"] = 12,
             ["sprite"] = "sprites/lec4-player.png"
           },
           objectGroup = {

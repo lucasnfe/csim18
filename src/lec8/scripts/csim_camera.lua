@@ -7,35 +7,39 @@
     lferreira@ucsc.edu
 ]]
 
-csim_camera = {}
-csim_camera.x = 0
-csim_camera.y = 0
-csim_camera.scale_x = 1
-csim_camera.scale_y = 1
-csim_camera.rotation = 0
+local csim_vector = require "scripts.csim_vector"
 
-function csim_camera.setPosition(x, y)
-  csim_camera.x = x or csim_camera.x
-  csim_camera.y = y or csim_camera.y
+local csim_camera = class()
+
+function csim_camera:init(x, y)
+    self.pos = csim_vector(x, y)
+    self.scale_x = 1
+    self.scale_y = 1
+    self.rotation = 0
 end
 
-function csim_camera.setRotation(r)
-  csim_camera.rotation = r or csim_camera.rotation
+function csim_camera:setPosition(x, y)
+  self.pos.x = x or self.pos.x
+  self.pos.y = y or self.pos.y
 end
 
-function csim_camera.setScale(sx, sy)
-  csim_camera.scale_x = sx or csim_camera.scale_x
-  csim_camera.scale_y = sy or csim_camera.scale_y
+function csim_camera:setRotation(r)
+  self.rotation = r or self.rotation
 end
 
-function csim_camera.start()
+function csim_camera:setScale(sx, sy)
+  self.scale_x = sx or self.scale_x
+  self.scale_y = sy or self.scale_y
+end
+
+function csim_camera:start()
     love.graphics.push()
-    love.graphics.rotate(-csim_camera.rotation)
-    love.graphics.scale(1 / csim_camera.scale_x, 1 / csim_camera.scale_y)
-    love.graphics.translate(-csim_camera.x, -csim_camera.y)
+    love.graphics.rotate(-self.rotation)
+    love.graphics.scale(1 / self.scale_x, 1 / self.scale_y)
+    love.graphics.translate(-self.pos.x, -self.pos.y)
 end
 
-function csim_camera.finish()
+function csim_camera:finish()
     love.graphics.pop()
 end
 

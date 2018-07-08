@@ -3,6 +3,9 @@
  <image source="lec6-5.png" trans="ff00ff" width="512" height="1024"/>
  <tile id="44">
   <properties>
+   <property name="mass" type="float" value="1"/>
+   <property name="speed_x" type="float" value="1"/>
+   <property name="speed_y" type="float" value="12"/>
    <property name="sprite" value="sprites/lec4-player.png"/>
   </properties>
   <objectgroup draworder="index">
