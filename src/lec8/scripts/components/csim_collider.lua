@@ -92,14 +92,14 @@ end
 function csim_collider:worldToMapPos(pos)
     -- TODO: return the tile in which the object is right now
     -- Hint: use map:convertPixelToTile(x,y) and math.floor(n) to
-    x,y = map:convertPixelToTile(pos.x, pos.y)
+    x,y = self.map:convertPixelToTile(pos.x, pos.y)
     return math.floor(x), math.floor(y)
 end
 
 function csim_collider:detectVerticalCollision(tile_x, tile_y, vert_side)
     -- TODO: Create a variable to store the tile which the object is trying to visit
     -- Hint: Use map.layers['Terrain']
-    local map_data = map.layers["Terrain"].data
+    local map_data = self.map.layers["Terrain"].data
     if map_data[tile_y+1] and map_data[tile_y+1][tile_x+1] then
         local tile = map_data[tile_y+1][tile_x+1]
 
@@ -134,9 +134,9 @@ function csim_collider:didCollideVertically(tile_x, tile_y, vert_side)
 
     -- TODO: Set rigidbody y position to be the tile y pos
     -- Hint: use map:convertTileToPixel
-    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y)
+    screen_x, screen_y = self.map:convertTileToPixel(tile_x, tile_y)
     if(vert_side == -1) then
-        self.parent.pos.y = screen_y + map.tileheight - self.rect.y
+        self.parent.pos.y = screen_y + self.map.tileheight - self.rect.y
     elseif(vert_side == 1) then
         self.parent.pos.y = screen_y - self.rect.y - self.rect.h
     end
@@ -145,7 +145,7 @@ end
 function csim_collider:detectHorizontalCollision(tile_x, tile_y, horiz_side)
     -- TODO: Create a variable to store the tile which the object is trying to visit
     -- Hint: Use map.layers['Terrain']
-    local map_data = map.layers["Terrain"].data
+    local map_data = self.map.layers["Terrain"].data
     if map_data[tile_y+1] and map_data[tile_y+1][tile_x+1] then
         local tile = map_data[tile_y+1][tile_x+1]
 
@@ -180,9 +180,9 @@ function csim_collider:didCollideHorizontally(tile_x, tile_y, horiz_side)
 
     -- TODO: Set rigidbody x position to be the tile x pos
     -- Hint: use map:convertTileToPixel
-    screen_x, screen_y = map:convertTileToPixel(tile_x, tile_y)
+    screen_x, screen_y = self.map:convertTileToPixel(tile_x, tile_y)
     if(horiz_side == -1) then
-        self.parent.pos.x = screen_x + map.tilewidth - self.rect.x
+        self.parent.pos.x = screen_x + self.map.tilewidth - self.rect.x
     elseif(horiz_side == 1) then
         self.parent.pos.x = screen_x - self.rect.x - self.rect.w
     end

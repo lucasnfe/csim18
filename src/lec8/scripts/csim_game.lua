@@ -112,7 +112,6 @@ end
 
 function csim_game.draw()
 	-- Draw map
-	print(camera.pos.x)
 	map:draw(-camera.pos.x, -camera.pos.y)
 
 	-- Draw the player sprite
