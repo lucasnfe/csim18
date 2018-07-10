@@ -14,7 +14,7 @@ local csim_player = class(csim_object)
 
 function csim_player:init(x, y, rotation, spr)
     csim_object:init(self, x, y, rotation, spr)
-    csim_player.is_on_ground = false
+    self.is_on_ground = false
 end
 
 function csim_player:onVerticalCollision(tile, vert_side)
