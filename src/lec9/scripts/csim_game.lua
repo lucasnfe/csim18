@@ -79,15 +79,15 @@ function csim_game.load()
 
 	-- Load Particle system
 	local p_sprite = love.graphics.newImage("sprites/particles/fireball.png")
-	local gravity_scale = 0.1
+	local gravity_scale = 0
 	local spawn_time = 0.1
 	local lifetime_range = {2, 3}
-	local speed_x_range = {-2, 2}
-	local speed_y_range = {-9.5, -10}
+	local speed_x_range = {10, 10}
+	local speed_y_range = {-0.25, 0.25}
 	local width = 32
 	local height = 32
-	local pos = csim_vector:new(64*58, csim_game.game_height+50)
-	particle_system = csim_particle_system:new(30, pos, p_sprite, width, height, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range)
+	local pos = csim_vector:new(64*2, csim_game.game_height+50)
+	particle_system = csim_particle_system:new(1000, pos, p_sprite, width, height, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range)
 
 	-- Load step sound
 	sounds = {}

@@ -30,7 +30,7 @@ function csim_particle_system:new(p_amount, pos, spr, w, h, gravity_scale, spawn
 
         -- Add rigidbody to the particle
         local rigid_body = csim_rigidbody:new(1, 1, 1)
-        rigid_body.gravity_scale = 0.1
+        rigid_body.gravity_scale = gravity_scale
         particle:addComponent(rigid_body)
 
         table.insert(obj.particles, particle)
@@ -64,7 +64,8 @@ end
 function csim_particle_system:shoot()
     for i=1,#self.particles do
         if(not self.particles[i].is_alive) then
-            self.particles[i]:shoot(love.math.random(self.lifetime_range[1], self.lifetime_range[2]),
+            self.particles[i]:shoot(
+                love.math.random(self.lifetime_range[1], self.lifetime_range[2]),
                 love.math.random(self.speed_x_range[1], self.speed_x_range[2]),
                 love.math.random(self.speed_y_range[1], self.speed_y_range[2]))
 
