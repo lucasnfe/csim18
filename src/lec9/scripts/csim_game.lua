@@ -46,7 +46,7 @@ function csim_game.load()
 	-- Create player animator
 	local player_animator = csim_animator:new(player.spr, 64, 128)
 	player_animator:addClip("move", {10,11}, 3, true)
-	player_animator:addClip("idle", {8}, 1, false)
+	player_animator:addClip("idle", {7,8}, 1, false)
 	player_animator:addClip("jump", {7}, 1, false)
 	player:addComponent(player_animator)
 	player:getComponent("animator"):play("idle")
