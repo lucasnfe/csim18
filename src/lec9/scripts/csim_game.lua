@@ -34,6 +34,7 @@ function csim_game.load()
 
 	-- Load characters
 	player, enemies = csim_game.loadCharacters()
+	csim_hud.collected_coins = 0
 
 	-- Create player rigid body
 	local player_rigid_body = csim_rigidbody:new(1, 1, 12)
@@ -46,7 +47,7 @@ function csim_game.load()
 	-- Create player animator
 	local player_animator = csim_animator:new(player.spr, 64, 128)
 	player_animator:addClip("move", {10,11}, 3, true)
-	player_animator:addClip("idle", {7,8}, 1, false)
+	player_animator:addClip("idle", {8}, 1, false)
 	player_animator:addClip("jump", {7}, 1, false)
 	player:addComponent(player_animator)
 	player:getComponent("animator"):play("idle")
@@ -59,6 +60,13 @@ function csim_game.load()
 		-- Adding rigid body to enemies
 		local rigid_body = csim_rigidbody:new(1, 2, 0)
 		enemies[i]:addComponent(rigid_body)
+
+		-- Adding animator to enemy
+		local enemy_animator = csim_animator:new(enemies[i].spr, 64, 64)
+		enemy_animator:addClip("idle", {1}, 1, true)
+		enemy_animator:addClip("death", {2}, 1, true)
+		enemy_animator:addClip("move", {1,3}, 10, true)
+		enemies[i]:addComponent(enemy_animator)
 
 		-- Adding fsm to enemies
 		local states = {}
@@ -82,12 +90,12 @@ function csim_game.load()
 	local gravity_scale = 0
 	local spawn_time = 0.1
 	local lifetime_range = {2, 3}
-	local speed_x_range = {10, 10}
-	local speed_y_range = {-0.25, 0.25}
+	local speed_x_range = {-2, 2}
+	local speed_y_range = {-7, -8}
 	local width = 32
 	local height = 32
 	local pos = csim_vector:new(64*2, csim_game.game_height+50)
-	particle_system = csim_particle_system:new(1000, pos, p_sprite, width, height, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range)
+	particle_system = csim_particle_system:new(30, pos, p_sprite, width, height, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range)
 
 	-- Load step sound
 	sounds = {}
@@ -176,7 +184,7 @@ function csim_game.loadItems()
 	return items
 end
 
-function csim_game.detectDynamicCollision(dynamic_objs)
+function csim_game.detectDynamicCollision(dynamic_objs, obj_type)
 	-- TODO: Check AABB collision against all dynamic objs
 	-- Hint: Use a for loop and create boxes for the player and the items.
 	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
@@ -186,13 +194,28 @@ function csim_game.detectDynamicCollision(dynamic_objs)
 	csim_debug.rect(min_a.x, min_a.y, player_collider.rect.w, player_collider.rect.h)
 
 	for i=1,#dynamic_objs do
-		local enemy_collider = dynamic_objs[i]:getComponent("collider")
-		min_b, max_b = enemy_collider:createAABB()
+		if(dynamic_objs[i] ~= nil) then
+			local obj_collider = dynamic_objs[i]:getComponent("collider")
+			min_b, max_b = obj_collider:createAABB()
 
-		csim_debug.rect(min_b.x, min_b.y, enemy_collider.rect.w, enemy_collider.rect.h)
+			csim_debug.rect(min_b.x, min_b.y, obj_collider.rect.w, obj_collider.rect.h)
 
-		if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
-			csim_debug.text("yay yay yay!")
+			if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
+				-- Destroy item after a collision
+				if(obj_type == "items") then
+					table.remove(dynamic_objs, i)
+					csim_hud.collected_coins = csim_hud.collected_coins + 1
+				elseif(obj_type == "enemies") then
+					if(math.abs(max_a.y - min_b.y) > obj_collider.rect.h/2) then
+						csim_game:load()
+					else
+						player:jump()
+						player:getComponent("rigidbody").vel.y = 0
+
+						table.remove(dynamic_objs, i)
+					end
+				end
+			end
 		end
 	end
 end
@@ -217,7 +240,7 @@ function csim_game.update(dt)
 				player_animator:play("move")
 			end
 		else
-			if(player.is_on_ground) then
+			if(not player_animator:isPlaying("idle") and player.is_on_ground) then
 				player_animator:play("idle")
 			end
 		end
@@ -237,13 +260,15 @@ function csim_game.update(dt)
 		-- TODO: Apply friction
 		if(player.is_on_ground) then
 			player_rigid_body:applyFriction(0.25)
+		else
+			player_rigid_body:applyXResistance(0.01)
 		end
 
 		-- TODO: Clamp acceleration
 		player_rigid_body.vel.x = csim_math.clamp(player_rigid_body.vel.x, -5, 5)
 
-		csim_game.detectDynamicCollision(items)
-		csim_game.detectDynamicCollision(enemies)
+		csim_game.detectDynamicCollision(items, "items")
+		csim_game.detectDynamicCollision(enemies, "enemies")
 
 		-- Camera is following the player
 		csim_camera.setPosition(player.pos.x - csim_game.game_width/2, player.pos.y - csim_game.game_height/2)
@@ -278,6 +303,10 @@ function csim_game.draw()
 	end
 
 	particle_system:draw()
+
+	--love.graphics.print(player.collected_coins, csim_game.game_width - 10, 10)
+
+
 end
 
 return csim_game

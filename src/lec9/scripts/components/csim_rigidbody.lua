@@ -48,9 +48,22 @@ function csim_rigidbody:applyFriction(u)
     end
 end
 
-function csim_rigidbody:applyResistance(c_d)
+function csim_rigidbody:applyXResistance(c_d)
     -- TODO: Implement friction with the ground
     -- Hint: F = v:mag()^2 * c_d * v:norm()
+    if(self.vel:mag() > 0.1) then
+        local speed = self.vel:mag()
+        local dragMagnitude = c_d * speed * speed
+
+        local f = csim_vector:new(self.vel.x, self.vel.y)
+        f:mul(-1)
+        f:norm()
+        f:mul(dragMagnitude)
+        f.y = 0
+        self:applyForce(f)
+    else
+        self.vel = csim_vector:new(0,0)
+    end
 end
 
 function csim_rigidbody:update(dt)

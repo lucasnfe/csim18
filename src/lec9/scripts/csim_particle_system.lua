@@ -64,11 +64,14 @@ end
 function csim_particle_system:shoot()
     for i=1,#self.particles do
         if(not self.particles[i].is_alive) then
+            self.particles[i]:getComponent("rigidbody").vel = csim_vector:new(0,0)
+            self.particles[i].pos.x = self.pos.x
+            self.particles[i].pos.y = self.pos.y
+
             self.particles[i]:shoot(
                 love.math.random(self.lifetime_range[1], self.lifetime_range[2]),
                 love.math.random(self.speed_x_range[1], self.speed_x_range[2]),
                 love.math.random(self.speed_y_range[1], self.speed_y_range[2]))
-
             return
         end
     end

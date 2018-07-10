@@ -32,12 +32,6 @@ function csim_particle:update(dt)
     if(self.timer >= self.lifetime) then
         self.timer = 0
         self.is_alive = false
-
-        if(self.system) then
-            self:getComponent("rigidbody").vel = csim_vector:new(0,0)
-            self.pos.x = self.system.pos.x
-            self.pos.y = self.system.pos.y
-        end
     end
 end
 

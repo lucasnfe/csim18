@@ -14,6 +14,7 @@ local push = require "lib.push"
 csim_debug = require('scripts.csim_debug')
 csim_camera = require('scripts.csim_camera')
 csim_game = require('scripts.csim_game')
+csim_hud = require('scripts.csim_hud')
 
 -- Setting values of global variables
 csim_game.game_width = 1024
@@ -43,6 +44,9 @@ function love.load()
 	-- Initialize virtual resolution
 	local window_width, window_height, flags  = love.window.getMode()
 	push:setupScreen(csim_game.game_width, csim_game.game_height, window_width, window_height, {highdpi=true})
+
+	-- Load HUD
+	csim_hud.init("fonts/font.ttf", 20)
 
 	-- Load Debugger
 	csim_debug.init(csim_game.game_width, csim_game.game_height, csim_game.game_height/4, 20)
@@ -76,6 +80,9 @@ function love.draw()
 
 	-- Disable camera
 	csim_camera.finish()
+
+	-- Draw HUD
+	csim_hud.draw()
 
 	-- Draw debugger
 	csim_debug.draw()
