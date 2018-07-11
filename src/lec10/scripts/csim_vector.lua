@@ -51,4 +51,8 @@ function csim_vector:norm()
     self:div(mag)
 end
 
+function csim_vector:str()
+    return ""..self.x..","..self.y
+end
+
 return csim_vector

@@ -25,6 +25,7 @@ local csim_rigidbody = require "scripts.components.csim_rigidbody"
 local csim_collider = require "scripts.components.csim_collider"
 local csim_fsm = require "scripts.components.csim_fsm"
 local csim_animator = require "scripts.components.csim_animator"
+local csim_pathfinder = require "scripts.components.csim_pathfinder"
 
 local csim_game = {}
 
@@ -68,6 +69,10 @@ function csim_game.load()
 		enemy_animator:addClip("idle", {7,8,9,10,11,12}, 4, true)
 		enemy_animator:addClip("move", {7,8,9,10,11,12}, 4, true)
 		enemies[i]:addComponent(enemy_animator)
+
+		-- Adding pathfinder to enemy
+		local enemy_pathfinder = csim_pathfinder:new(map)
+		enemies[i]:addComponent(enemy_pathfinder)
 
 		-- Adding fsm to enemies
 		local states = {}
