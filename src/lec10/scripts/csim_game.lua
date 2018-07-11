@@ -29,6 +29,9 @@ local csim_pathfinder = require "scripts.components.csim_pathfinder"
 
 local csim_game = {}
 
+local SHOOT_TIME = 0.5
+local SHOOT_SPEED = 2.5
+
 function csim_game.load()
 	csim_hud.collected_coins = 0
 
@@ -37,9 +40,32 @@ function csim_game.load()
 
 	-- Load characters
 	player, enemies = csim_game.loadCharacters()
+	player.name = "player"
+
+	-- Load Particle system
+	local p_sprite = love.graphics.newImage("sprites/fireball.png")
+	local gravity_scale = 0
+	local spawn_time = 0.25
+	local lifetime_range = {3, 3}
+	local speed_x_range = {-10, 10}
+	local speed_y_range = {-10, 10}
+	local auto_shoot = false
+	local pos = csim_vector:new(player.pos.x + player.width/2, player.pos.y + player.height/2)
+
+	player.particle_system = csim_particle_system:new(30, pos, p_sprite, 16, 16, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range, auto_shoot)
+	player.shoot_timer = 0
+	player.shot = false
+
+	-- Add colliders to paticles
+	for i=1,#player.particle_system.particles do
+		local particle = player.particle_system.particles[i]
+		particle.name = "particle"
+		local collider = csim_collider:new(map, {x=4,y=4,w=8,h=8})
+		particle:addComponent(collider)
+	end
 
 	-- Create player rigid body
-	local player_rigid_body = csim_rigidbody:new(1, 1, 1)
+	local player_rigid_body = csim_rigidbody:new(1, 1, 1, 2)
 	player_rigid_body.gravity_scale = 0
 	player:addComponent(player_rigid_body)
 
@@ -60,7 +86,7 @@ function csim_game.load()
 		enemies[i]:addComponent(enemy_collider)
 
 		-- Adding rigid body to enemies
-		local rigid_body = csim_rigidbody:new(1, 1, 1)
+		local rigid_body = csim_rigidbody:new(1, 1, 1, 2)
 		rigid_body.gravity_scale = 0
 		enemies[i]:addComponent(rigid_body)
 
@@ -96,18 +122,6 @@ function csim_game.load()
 		items[i]:getComponent("animator"):play("idle")
 	end
 
-	-- Load Particle system
-	-- local p_sprite = love.graphics.newImage("sprites/particles/fireball.png")
-	-- local gravity_scale = 0
-	-- local spawn_time = 0.1
-	-- local lifetime_range = {2, 3}
-	-- local speed_x_range = {-2, 2}
-	-- local speed_y_range = {-7, -8}
-	-- local width = 32
-	-- local height = 32
-	-- local pos = csim_vector:new(64*2, csim_game.game_height+50)
-	-- particle_system = csim_particle_system:new(30, pos, p_sprite, width, height, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range)
-
 	-- Load step sound
 	sounds = {}
 	sounds["step"] = love.audio.newSource("sounds/lec2-step.wav", "static")
@@ -117,6 +131,19 @@ function csim_game.load()
 	-- Play soundtrack in loop
 	sounds['soundtrack']:setLooping(true)
 	sounds['soundtrack']:play()
+end
+
+function csim_game.calculateShootDirection(target)
+	-- Calculate
+	if(target) then
+		local shoot_dir = csim_vector:new(target.pos.x + target.width/2, target.pos.y + target.height/2)
+		shoot_dir:sub(csim_vector:new(player.pos.x + player.width/2, player.pos.y + player.height/2))
+		shoot_dir:norm()
+
+		return shoot_dir
+	end
+
+	return nil
 end
 
 function csim_game.loadCharacters()
@@ -200,14 +227,11 @@ function csim_game.loadItems()
 	return items
 end
 
-function csim_game.detectDynamicCollision(dynamic_objs, obj_type)
-	-- TODO: Check AABB collision against all dynamic objs
-	-- Hint: Use a for loop and create boxes for the player and the items.
-	-- csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)
-	local player_collider = player:getComponent("collider")
-	min_a, max_a = player_collider:createAABB()
+function csim_game.detectDynamicCollision(character, dynamic_objs, obj_type)
+	local character_collider = character:getComponent("collider")
+	min_a, max_a = character_collider:createAABB()
 
-	csim_debug.rect(min_a.x, min_a.y, player_collider.rect.w, player_collider.rect.h)
+	csim_debug.rect(min_a.x, min_a.y, character_collider.rect.w, character_collider.rect.h)
 
 	for i=1,#dynamic_objs do
 		if(dynamic_objs[i] ~= nil) then
@@ -217,17 +241,33 @@ function csim_game.detectDynamicCollision(dynamic_objs, obj_type)
 			csim_debug.rect(min_b.x, min_b.y, obj_collider.rect.w, obj_collider.rect.h)
 
 			if(csim_math.checkBoxCollision(min_a, max_a, min_b, max_b)) then
-				-- Destroy item after a collision
-				if(obj_type == "items") then
-					table.remove(dynamic_objs, i)
-					love.audio.play(sounds["coin"])
-					csim_hud.collected_coins = csim_hud.collected_coins + 1
-				elseif(obj_type == "enemies") then
-					love.audio.stop()
-					csim_game:load()
+
+				if(character.name == "player") then
+					csim_game.playerDynamicCollision(dynamic_objs, i, obj_type)
+				elseif(character.name == "particle") then
+					csim_game.particleDynamicCollision(dynamic_objs, i, obj_type)
 				end
 			end
 		end
+	end
+end
+
+function csim_game.playerDynamicCollision(dynamic_objs, i, obj_type)
+	-- Destroy item after a collision
+	if(obj_type == "items") then
+		table.remove(dynamic_objs, i)
+		love.audio.play(sounds["coin"])
+		csim_hud.collected_coins = csim_hud.collected_coins + 1
+	elseif(obj_type == "enemies") then
+		love.audio.stop()
+		csim_game:load()
+	end
+end
+
+function csim_game.particleDynamicCollision(dynamic_objs, i, obj_type)
+	-- Destroy item after a collision
+	if(obj_type == "enemies") then
+		table.remove(dynamic_objs, i)
 	end
 end
 
@@ -255,13 +295,40 @@ function csim_game.update(dt)
 
 		player:update(dt)
 
+		player.particle_system.pos = csim_vector:new(player.pos.x + player.width/2,
+			player.pos.y + player.height/2)
+		player.particle_system:update(dt)
+
+		-- Shot particles towards the first enemy
+		if (love.keyboard.isDown('z') and not player.shot) then
+			local shoot_dir = csim_game.calculateShootDirection(enemies[1])
+			if(shoot_dir) then
+				shoot_dir:mul(SHOOT_SPEED)
+				player.particle_system:shootWithDirectionAndLifetime(shoot_dir, 3)
+				player.shot = true
+			end
+		end
+
+		if(player.shot) then
+			player.shoot_timer = player.shoot_timer + dt
+			if(player.shoot_timer > SHOOT_TIME) then
+				player.shoot_timer = 0
+				player.shot = false
+			end
+		end
+
 		local player_rigid_body = player:getComponent("rigidbody")
 
 		-- TODO: Apply friction
 		player_rigid_body:applyFriction(0.25)
 
-		csim_game.detectDynamicCollision(items, "items")
-		csim_game.detectDynamicCollision(enemies, "enemies")
+		csim_game.detectDynamicCollision(player, items, "items")
+		csim_game.detectDynamicCollision(player, enemies, "enemies")
+
+		for i=1,#player.particle_system.particles do
+			local particle = player.particle_system.particles[i]
+			csim_game.detectDynamicCollision(particle, enemies, "enemies")
+		end
 
 		-- Camera is following the player
 		csim_camera.setPosition(0, player.pos.y - csim_game.game_height/2)
@@ -293,6 +360,7 @@ function csim_game.draw()
 
 	-- Draw the player sprite
 	player:draw()
+	player.particle_system:draw()
 
 	-- Draw items
 	for i=1,#items do
@@ -303,8 +371,6 @@ function csim_game.draw()
 	for i=1,#enemies do
 		enemies[i]:draw()
 	end
-
-	-- particle_system:draw()
 end
 
 return csim_game

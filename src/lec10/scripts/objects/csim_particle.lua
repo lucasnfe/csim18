@@ -21,18 +21,17 @@ function csim_particle:shoot(lifetime, speed_x, speed_y)
     self:getComponent("rigidbody"):applyForce(csim_vector:new(speed_x, speed_y))
 end
 
-function csim_particle:update(dt)
-    for name,component in pairs(self.components) do
-        if(component.update ~= nil) then
-            component:update(dt)
-        end
-    end
+function csim_particle:reset()
+    self.timer = 0
+    self.is_alive = false
+end
 
-    self.timer = self.timer + dt
-    if(self.timer >= self.lifetime) then
-        self.timer = 0
-        self.is_alive = false
-    end
+function csim_particle:onVerticalCollision(tile, vert_side)
+    self:reset()
+end
+
+function csim_particle:onHorizontalCollision(tile, horiz_side)
+    self:reset()
 end
 
 return csim_particle

@@ -71,7 +71,7 @@ function csim_pathfinder:plan(start, goal)
     if(path) then
         print("path = ")
         print("path size = "..#path)
-        
+
         for i=1,#path do
             print(""..(path[i].x - 1).." "..(path[i].y - 1))
         end

@@ -13,7 +13,7 @@ local csim_vector = require "scripts.csim_vector"
 
 local csim_particle_system = {}
 
-function csim_particle_system:new(p_amount, pos, spr, w, h, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range)
+function csim_particle_system:new(p_amount, pos, spr, w, h, gravity_scale, spawn_time, lifetime_range, speed_x_range, speed_y_range, auto_shoot)
     local obj = {}
     obj.pos = pos
     obj.timer = 0
@@ -21,6 +21,7 @@ function csim_particle_system:new(p_amount, pos, spr, w, h, gravity_scale, spawn
     obj.spawn_time = spawn_time
     obj.speed_x_range = speed_x_range
     obj.speed_y_range = speed_y_range
+    obj.auto_shoot = auto_shoot
     obj.particles = {}
 
     for i=1,p_amount do
@@ -29,7 +30,7 @@ function csim_particle_system:new(p_amount, pos, spr, w, h, gravity_scale, spawn
         particle.system = obj
 
         -- Add rigidbody to the particle
-        local rigid_body = csim_rigidbody:new(1, 1, 1)
+        local rigid_body = csim_rigidbody:new(1, 1, 1, 10)
         rigid_body.gravity_scale = gravity_scale
         particle:addComponent(rigid_body)
 
@@ -42,14 +43,23 @@ function csim_particle_system:new(p_amount, pos, spr, w, h, gravity_scale, spawn
 end
 
 function csim_particle_system:update(dt)
-    self.timer = self.timer + dt
-    if(self.timer > self.spawn_time) then
-        self:shoot()
-        self.timer = 0
+    if(self.auto_shoot) then
+        self.timer = self.timer + dt
+        if(self.timer > self.spawn_time) then
+            self.timer = 0
+            self:shoot()
+        end
     end
 
     for i=1,#self.particles do
-        self.particles[i]:update(dt)
+        if(self.particles[i].is_alive) then
+            self.particles[i]:update(dt)
+
+            self.particles[i].timer = self.particles[i].timer + dt
+            if(self.particles[i].timer >= self.particles[i].lifetime) then
+                self.particles[i]:reset()
+            end
+        end
     end
 end
 
@@ -61,19 +71,33 @@ function csim_particle_system:draw()
     end
 end
 
-function csim_particle_system:shoot()
+function csim_particle_system:findDeadParticle()
     for i=1,#self.particles do
         if(not self.particles[i].is_alive) then
             self.particles[i]:getComponent("rigidbody").vel = csim_vector:new(0,0)
             self.particles[i].pos.x = self.pos.x
             self.particles[i].pos.y = self.pos.y
 
-            self.particles[i]:shoot(
-                love.math.random(self.lifetime_range[1], self.lifetime_range[2]),
-                love.math.random(self.speed_x_range[1], self.speed_x_range[2]),
-                love.math.random(self.speed_y_range[1], self.speed_y_range[2]))
-            return
+            return self.particles[i]
         end
+    end
+
+    return nil
+end
+
+function csim_particle_system:shoot()
+    local particle = self:findDeadParticle()
+    if(particle) then
+        particle:shoot(love.math.random(self.lifetime_range[1], self.lifetime_range[2]),
+                   love.math.random(self.speed_x_range[1], self.speed_x_range[2]),
+                   love.math.random(self.speed_y_range[1], self.speed_y_range[2]))
+    end
+end
+
+function csim_particle_system:shootWithDirectionAndLifetime(speed, lifetime)
+    local particle = self:findDeadParticle()
+    if(particle) then
+        particle:shoot(lifetime, speed.x, speed.y)
     end
 end
 

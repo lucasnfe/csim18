@@ -11,14 +11,15 @@ local csim_vector = require "scripts.csim_vector"
 
 local csim_rigidbody = {}
 local GRAVITY = 9.8
-local MAX_SPEED = 2
+local MAX_SPEED = 10
 
-function csim_rigidbody:new(mass, speed_x, speed_y)
+function csim_rigidbody:new(mass, speed_x, speed_y, max_speed)
     local comp = {}
     comp.speed = csim_vector:new(speed_x, speed_y)
     comp.vel = csim_vector:new(0,0)
     comp.acc = csim_vector:new(0,0)
     comp.mass = mass
+    comp.max_speed = max_speed or MAX_SPEED
     comp.name = "rigidbody"
     comp.parent = nil
     comp.gravity_scale = 1
@@ -84,8 +85,10 @@ function csim_rigidbody:update(dt)
         collider:udpateHorizontal()
     end
 
-    self.vel.x = csim_math.clamp(self.vel.x, -MAX_SPEED, MAX_SPEED)
-    self.vel.y = csim_math.clamp(self.vel.y, -MAX_SPEED, MAX_SPEED)
+    if(self.vel:mag() > self.max_speed) then
+        self.vel:norm()
+        self.vel:mul(self.max_speed)
+    end
 
     -- TODO: Sum self.vel to self.parent.pos
     self.parent.pos:add(self.vel)
