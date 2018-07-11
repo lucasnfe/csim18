@@ -260,6 +260,8 @@ function csim_game.update(dt)
 
 		-- Camera is following the player
 		csim_camera.setPosition(0, player.pos.y - csim_game.game_height/2)
+
+		-- Lock the camera
 		csim_camera.y = csim_math.clamp(csim_camera.y, 0, csim_game.game_height/4)
 	end
 
