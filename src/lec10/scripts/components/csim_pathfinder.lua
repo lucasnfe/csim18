@@ -67,9 +67,11 @@ end
 -- start and goal are both vectors
 function csim_pathfinder:plan(start, goal)
     local path = self:bfs(start, goal)
-    print("path = ")
-    print("path size = "..#path)
+
     if(path) then
+        print("path = ")
+        print("path size = "..#path)
+        
         for i=1,#path do
             print(""..(path[i].x - 1).." "..(path[i].y - 1))
         end
