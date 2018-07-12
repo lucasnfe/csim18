@@ -47,9 +47,18 @@ function csim_enemy.update_move_state(dt, state, enemy)
             local player_x, player_y = player:getComponent("collider"):worldToMapPos(player.pos)
             local player_pos = csim_vector:new(player_x + 1, player_y + 1)
 
-            enemy:getComponent("pathfinder"):plan(enemy_pos, player_pos)
-            state.timer = 0
+            -- local path = enemy:getComponent("pathfinder"):plan(enemy_pos, player_pos)
+            -- state.timer = 0
+
+            -- Now that I have a plan, follow this path
+            -- enemy:getComponent("steer"):seek(path[])
         end
+    end
+
+    if(csim_math.distance(enemy.pos, player.pos) < love.math.random(70, 100)) then
+        enemy:getComponent("steer"):flee(player)
+    else
+        enemy:getComponent("steer"):seek(player)
     end
 end
 

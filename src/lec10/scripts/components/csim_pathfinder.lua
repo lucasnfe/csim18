@@ -75,6 +75,8 @@ function csim_pathfinder:plan(start, goal)
         for i=1,#path do
             print(""..(path[i].x - 1).." "..(path[i].y - 1))
         end
+
+        return path
     end
 end
 

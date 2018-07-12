@@ -26,6 +26,7 @@ local csim_collider = require "scripts.components.csim_collider"
 local csim_fsm = require "scripts.components.csim_fsm"
 local csim_animator = require "scripts.components.csim_animator"
 local csim_pathfinder = require "scripts.components.csim_pathfinder"
+local csim_steer = require "scripts.components.csim_steer"
 
 local csim_game = {}
 
@@ -99,6 +100,10 @@ function csim_game.load()
 		-- Adding pathfinder to enemy
 		local enemy_pathfinder = csim_pathfinder:new(map)
 		enemies[i]:addComponent(enemy_pathfinder)
+
+		-- Adding steering behaviors to the enemy
+		local enemy_steer = csim_steer:new()
+		enemies[i]:addComponent(enemy_steer)
 
 		-- Adding fsm to enemies
 		local states = {}
@@ -260,7 +265,7 @@ function csim_game.playerDynamicCollision(dynamic_objs, i, obj_type)
 		csim_hud.collected_coins = csim_hud.collected_coins + 1
 	elseif(obj_type == "enemies") then
 		love.audio.stop()
-		csim_game:load()
+		-- csim_game:load()
 	end
 end
 
