@@ -23,11 +23,11 @@ function love.load()
 	push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {fullscreen = false})
 
 	-- Load map created with Tiled and exported to lua format
-	map = sti("map/lec1.lua", {})
+	map = sti("", {})
 
 	-- Load sound effects
 	sounds = {
-		['track1'] = love.audio.newSource('sounds/lec1.wav', 'static')
+		['track1'] = love.audio.newSource('', 'static')
 	}
 
 	-- Play soundtrack in loop
