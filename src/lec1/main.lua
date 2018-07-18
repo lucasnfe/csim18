@@ -26,13 +26,13 @@ function love.load()
 	map = sti("", {})
 
 	-- Load sound effects
-	sounds = {
-		['track1'] = love.audio.newSource('', 'static')
-	}
+	-- sounds = {
+	-- 	['track1'] = love.audio.newSource('', 'static')
+	-- }
 
 	-- Play soundtrack in loop
-	sounds['track1']:setLooping(true)
-	sounds['track1']:play()
+	-- sounds['track1']:setLooping(true)
+	-- sounds['track1']:play()
 end
 
 function love.draw()
