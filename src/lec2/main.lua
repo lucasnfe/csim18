@@ -28,8 +28,7 @@ function love.draw()
 	push:start()
 
 	-- Draw map using sti library
-
-	love.graphics.circle("line", gameWidth/2, gameWidth/2, 5, 10)
+	love.graphics.circle("line", 20, 20, 5, 10)
 
 	push:finish()
 end
