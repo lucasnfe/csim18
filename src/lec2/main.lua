@@ -16,30 +16,20 @@ local gameWidth, gameHeight = 256, 256
 local windowWidth, windowHeight, flags = love.window.getMode()
 
 function love.load()
-	-- Set love's default filter to "nearest-neighbor".
-	love.graphics.setDefaultFilter('nearest', 'nearest')
-
 	-- Initialize virtual resolution
 	push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {fullscreen = false})
+end
 
-	-- Load map created with Tiled and exported to lua format
-	map = sti("map/lec1.lua", {})
+function love.update(dt)
 
-	-- Load sound effects
-	-- sounds = {
-	-- 	['track1'] = love.audio.newSource('', 'static')
-	-- }
-
-	-- Play soundtrack in loop
-	-- sounds['track1']:setLooping(true)
-	-- sounds['track1']:play()
 end
 
 function love.draw()
 	push:start()
 
 	-- Draw map using sti library
-	map:draw(0, 0)
+
+	love.graphics.circle("line", gameWidth/2, gameWidth/2, 5, 10)
 
 	push:finish()
 end
