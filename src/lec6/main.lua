@@ -32,9 +32,6 @@ function love.load()
 	-- Creating a table to represent the player with three variables: sprite, x and y
 	local sprite = love.graphics.newImage("sprites/player.png")
 	player = csim_object(0, 0, sprite)
-
-	player.x = 0
-	player.y = 0
 	player.life = 10
 	player.takeDamage = function(damage)
 		player.life = player.life - damage
@@ -50,20 +47,19 @@ function love.load()
 	coins = {}
 	number_coins = love.math.random(10, 100)
 
+	local sprite  = love.graphics.newImage("sprites/coin.png")
+
 	for i=1,number_coins do
-		local c = {}
-		c.x = love.math.random(0, gameWidth)
-		c.y = love.math.random(0, gameHeight)
-		c.sprite = love.graphics.newImage("sprites/coin.png")
+		local random_x = love.math.random(0, gameWidth)
+		local random_y = love.math.random(0, gameHeight)
+		local c = csim_object(random_x, random_y, sprite)
 
 		table.insert(coins, c)	 -- coins[i] = c
 	end
 
 	-- Load enemy
-	enemy = {}
-	enemy.x = gameWidth/2
-	enemy.y = gameHeight/2
-	enemy.sprite = love.graphics.newImage("sprites/enemy.png")
+	local sprite = love.graphics.newImage("sprites/enemy.png")
+	enemy = csim_object(gameWidth/2, gameHeight/2, sprite)
 
 	map = sti("map/lec6.lua")
 end
@@ -118,18 +114,18 @@ function love.draw()
 	map:draw()
 
 	-- Draw the player
-	love.graphics.draw(player.spr, player.x, player.y)
+	player:draw()
 
 	-- Draw the coins
 	for i=1,#coins do
-		love.graphics.draw(coins[i].sprite, coins[i].x, coins[i].y)
+		coins[i]:draw()
 	end
 
 	-- Draw the number of coins
 	love.graphics.print(number_coins, gameWidth - 20, 20)
 
 	-- Draw the enemy
-	love.graphics.draw(enemy.sprite, enemy.x, enemy.y)
+	enemy:draw()
 
 	push:finish()
 end
