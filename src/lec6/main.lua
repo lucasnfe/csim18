@@ -14,6 +14,7 @@ require "lib.class"
 
 -- Loading objects
 local csim_object = require "scripts.csim_object"
+local csim_enemy = require "scripts.csim_enemy"
 
 -- Setting values of global variables
 local gameWidth, gameHeight = 128, 128
@@ -59,7 +60,7 @@ function love.load()
 
 	-- Load enemy
 	local sprite = love.graphics.newImage("sprites/enemy.png")
-	enemy = csim_object(gameWidth/2, gameHeight/2, sprite)
+	enemy = csim_enemy(gameWidth/2, gameHeight/2, sprite)
 
 	map = sti("map/lec6.lua")
 end
@@ -99,6 +100,8 @@ function love.update(dt)
 
 		end
 	end
+
+	enemy:update(dt)
 
 	if( distance(player.pos.x, player.pos.y, enemy.pos.x, enemy.pos.y) < 5 ) then
 		print("ouch! "..player.life)
