@@ -10,6 +10,11 @@
 local sti = require "lib.sti"
 local push = require "lib.push"
 
+require "lib.class"
+
+-- Loading objects
+local csim_object = require "scripts.csim_object"
+
 -- Setting values of global variables
 local gameWidth, gameHeight = 128, 128
 local windowWidth, windowHeight, flags = love.window.getMode()
@@ -25,8 +30,9 @@ function love.load()
 	push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {fullscreen = false})
 
 	-- Creating a table to represent the player with three variables: sprite, x and y
-	player = {}
-	player.sprite = love.graphics.newImage("sprites/player.png")
+	local sprite = love.graphics.newImage("sprites/player.png")
+	player = csim_object(0, 0, sprite)
+
 	player.x = 0
 	player.y = 0
 	player.life = 10
@@ -112,7 +118,7 @@ function love.draw()
 	map:draw()
 
 	-- Draw the player
-	love.graphics.draw(player.sprite, player.x, player.y)
+	love.graphics.draw(player.spr, player.x, player.y)
 
 	-- Draw the coins
 	for i=1,#coins do
