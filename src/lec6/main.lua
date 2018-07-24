@@ -85,14 +85,14 @@ function move(r, l, u, d, x, y)
 end
 
 function love.update(dt)
-	player.x, player.y = move("d", "a", "w", "s", player.x, player.y)
+	player.pos.x, player.pos.y = move("d", "a", "w", "s", player.pos.x, player.pos.y)
 
 	love.audio.play(sound)
 
 	for i=1,#coins do
 		if(coins[i] ~= nil) then
 
-			if( distance(player.x, player.y, coins[i].x, coins[i].y) < 5 ) then
+			if( distance(player.pos.x, player.pos.y, coins[i].pos.x, coins[i].pos.y) < 5 ) then
 				table.remove(coins, i)
 				number_coins = number_coins -1
 			end
@@ -100,10 +100,10 @@ function love.update(dt)
 		end
 	end
 
-	if( distance(player.x, player.y, enemy.x, enemy.y) < 5 ) then
+	if( distance(player.pos.x, player.pos.y, enemy.pos.x, enemy.pos.y) < 5 ) then
 		print("ouch! "..player.life)
-		player.x = enemy.x + love.math.random(10, 12)
-		player.y = enemy.y + love.math.random(10, 12)
+		player.pos.x = enemy.x + love.math.random(10, 12)
+		player.pos.y = enemy.y + love.math.random(10, 12)
 		player.takeDamage(1)
 	end
 end
