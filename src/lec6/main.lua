@@ -102,8 +102,8 @@ function love.update(dt)
 
 	if( distance(player.pos.x, player.pos.y, enemy.pos.x, enemy.pos.y) < 5 ) then
 		print("ouch! "..player.life)
-		player.pos.x = enemy.x + love.math.random(10, 12)
-		player.pos.y = enemy.y + love.math.random(10, 12)
+		player.pos.x = enemy.pos.x + love.math.random(10, 12)
+		player.pos.y = enemy.pos.y + love.math.random(10, 12)
 		player.takeDamage(1)
 	end
 end
