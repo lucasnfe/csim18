@@ -35,7 +35,7 @@ function love.load()
 	local sprite = love.graphics.newImage("sprites/player.png")
 	player = csim_player(0, 0, sprite, 10)
 
-	sound = love.audio.newSource("sounds/lec6.wav", "static")
+	sound = love.audio.newSource("sounds/lec7.wav", "static")
 	--sound:setLooping(true)
 
 	-- Loading coins
@@ -59,7 +59,7 @@ function love.load()
 	-- Load Camera
 	camera = csim_camera(0, 0)
 
-	map = sti("map/lec6.lua")
+	map = sti("map/lec7.lua")
 end
 
 function love.update(dt)

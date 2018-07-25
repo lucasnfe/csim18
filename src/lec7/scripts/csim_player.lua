@@ -33,6 +33,8 @@ function csim_player:takeDamage(damage)
 end
 
 function csim_player:update(dt)
+    csim_object:update(dt)
+    
     self:move("d", "a", "w", "s")
 
     for i=1,#coins do
