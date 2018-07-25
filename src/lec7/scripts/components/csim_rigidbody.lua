@@ -22,7 +22,7 @@ function csim_rigidbody:applyForce(f)
 end
 
 function csim_rigidbody:update(dt)
-    -- Apply gravity
+    -- Apply weight force
     local g = csim_vector(0, 0.098)
     local weight = g:mul(self.mass)
     self:applyForce(weight)
