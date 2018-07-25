@@ -24,10 +24,6 @@ local csim_rigidbody = require "scripts.components.csim_rigidbody"
 local gameWidth, gameHeight = 128, 128
 local windowWidth, windowHeight, flags = love.window.getMode()
 
-function distance(x1,y1,x2,y2)
-	return math.sqrt((x1-x2)^2 + (y1-y2)^2)
-end
-
 function love.load()
 	love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -36,7 +32,7 @@ function love.load()
 
 	-- Creating a table to represent the player with three variables: sprite, x and y
 	local sprite = love.graphics.newImage("sprites/player.png")
-	player = csim_player(0, 0, sprite, 10)
+	player = csim_player(0, -20, sprite, 10)
 	local rigidBody = csim_rigidbody()
 	player:addComponent(rigidBody)
 
@@ -72,7 +68,7 @@ function love.update(dt)
 
 	camera:setPosition(player.pos.x - gameWidth/2, player.pos.y - gameHeight/2)
 
-	enemy:update(dt)
+	--enemy:update(dt)
 end
 
 function drawGame()
@@ -88,9 +84,6 @@ function drawGame()
 	for i=1,#coins do
 		coins[i]:draw()
 	end
-
-	-- Draw the number of coins
-	love.graphics.print(number_coins, gameWidth - 20, 20)
 end
 
 function love.draw()
@@ -103,6 +96,9 @@ function love.draw()
 
 	-- Disable camera
 	camera:finish()
+
+	-- Draw the number of coins
+	love.graphics.print(number_coins, gameWidth - 20, 20)
 
 	push:finish()
 end
