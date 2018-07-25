@@ -37,8 +37,8 @@ function love.load()
 	player:addComponent(rigidBody)
 
 	sound = love.audio.newSource("sounds/lec7.wav", "static")
+	sound:setLooping(true)
 	sound:play()
-	--sound:setLooping(true)
 
 	-- Loading coins
 	coins = {}
