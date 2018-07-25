@@ -1,4 +1,4 @@
-local csim_object = require "scripts.csim_object"
+local csim_object = require "scripts.objects.csim_object"
 
 local csim_player = class(csim_object)
 
@@ -34,7 +34,7 @@ end
 
 function csim_player:update(dt)
     csim_object:update(dt)
-    
+
     self:move("d", "a", "w", "s")
 
     for i=1,#coins do

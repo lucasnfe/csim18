@@ -12,9 +12,9 @@ local push = require "lib.push"
 local class = require "lib.class"
 
 -- Loading objects
-local csim_object = require "scripts.csim_object"
-local csim_enemy = require "scripts.csim_enemy"
-local csim_player = require "scripts.csim_player"
+local csim_object = require "scripts.objects.csim_object"
+local csim_enemy = require "scripts.objects.csim_enemy"
+local csim_player = require "scripts.objects.csim_player"
 local csim_camera = require "scripts.csim_camera"
 
 -- Setting values of global variables

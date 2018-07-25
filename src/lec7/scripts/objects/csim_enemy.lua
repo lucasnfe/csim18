@@ -1,4 +1,4 @@
-local csim_object = require "scripts.csim_object"
+local csim_object = require "scripts.objects.csim_object"
 
 local csim_enemy = class(csim_object)
 
