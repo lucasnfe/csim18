@@ -18,9 +18,10 @@ end
 function csim_object:addComponent(component)
     if component ~= nil and component.name ~= nil then
         if component.load ~= nil then
-            component:load()
+            component:load()    
         end
 
+        component.parent = self
         self.components[component.name] = component
     end
 end
@@ -33,7 +34,7 @@ function csim_object:draw()
     love.graphics.draw(self.spr, self.pos.x, self.pos.y)
 end
 
-function csim_object:update(dt)    
+function csim_object:update(dt)
     for name, comp in pairs(self.components) do
         if comp.update ~= nil then
             comp:update(dt)

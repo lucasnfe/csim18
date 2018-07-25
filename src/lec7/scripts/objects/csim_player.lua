@@ -33,7 +33,7 @@ function csim_player:takeDamage(damage)
 end
 
 function csim_player:update(dt)
-    csim_object:update(dt)
+    csim_object.update(self, dt)
 
     self:move("d", "a", "w", "s")
 

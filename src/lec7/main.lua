@@ -17,6 +17,9 @@ local csim_enemy = require "scripts.objects.csim_enemy"
 local csim_player = require "scripts.objects.csim_player"
 local csim_camera = require "scripts.csim_camera"
 
+-- Importing components
+local csim_rigidbody = require "scripts.components.csim_rigidbody"
+
 -- Setting values of global variables
 local gameWidth, gameHeight = 128, 128
 local windowWidth, windowHeight, flags = love.window.getMode()
@@ -34,6 +37,8 @@ function love.load()
 	-- Creating a table to represent the player with three variables: sprite, x and y
 	local sprite = love.graphics.newImage("sprites/player.png")
 	player = csim_player(0, 0, sprite, 10)
+	local rigidBody = csim_rigidbody()
+	player:addComponent(rigidBody)
 
 	sound = love.audio.newSource("sounds/lec7.wav", "static")
 	--sound:setLooping(true)
