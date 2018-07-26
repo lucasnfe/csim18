@@ -19,4 +19,13 @@ end
 function csim_collider:detectVerticalCollision()
 end
 
+function csim_collider:worldToMapPos(pos)
+end
+
+function csim_collider:resolveHorizontalCollision()
+end
+
+function csim_collider:resolveVerticalCollision()
+end
+
 return csim_collider

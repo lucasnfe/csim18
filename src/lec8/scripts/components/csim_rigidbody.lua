@@ -37,6 +37,12 @@ function csim_rigidbody:update(dt)
 
     self.vel = self.vel:add(self.acc)
 
+    local collider = self.parent:getComponent("collider")
+    if(collider) then
+        collider:detectHorizontalCollision()
+        collider:detectVerticalCollision()
+    end
+
     if(self.vel:mag() > self.max_speed) then
         self.vel = self.vel:norm()
         self.vel = self.vel:mul(self.max_speed)
