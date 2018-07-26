@@ -20,13 +20,19 @@ end
 
 function csim_player:move(r, l, u, d)
 	if(love.keyboard.isDown(r)) then
-		self.pos.x = self.pos.x + 1
+        local f = csim_vector(0.2, 0)
+        self:getComponent("rigidbody"):applyForce(f)
+
+        -- Play move animation
         self.dir = 1
         if(self:getComponent("rigidbody").vel.y == 0) then
             self:getComponent("animator"):play("move")
         end
     elseif(love.keyboard.isDown(l)) then
-		self.pos.x = self.pos.x - 1
+        local f = csim_vector(-0.2, 0)
+        self:getComponent("rigidbody"):applyForce(f)
+
+        -- Play move animation
         self.dir = -1
         if(self:getComponent("rigidbody").vel.y == 0) then
             self:getComponent("animator"):play("move")
@@ -36,14 +42,14 @@ function csim_player:move(r, l, u, d)
 	end
 
 	if(love.keyboard.isDown(u)) then
-		-- self.pos.y = self.pos.y - 1
-        local jumpForce = csim_vector(0, -0.5)
+        local jumpForce = csim_vector(0, -0.3)
         self:getComponent("rigidbody"):applyForce(jumpForce)
         self:getComponent("animator"):play("jump")
 	end
 
 	if( love.keyboard.isDown(d)) then
-		self.pos.y = self.pos.y + 1
+		local f = csim_vector(0, 0.3)
+        self:getComponent("rigidbody"):applyForce(f)
 	end
 end
 
@@ -57,13 +63,12 @@ end
 function csim_player:update(dt)
     csim_object.update(self, dt)
 
-    -- Stop player when it hits the ground
-    if(self.pos.y >= 10*8) then
-        self:getComponent("rigidbody").vel.y = 0
-        self.pos.y = 10*8
-    end
-
     self:move("d", "a", "w", "s")
+
+    -- Apply resistence if is on ground
+    if(self:getComponent("rigidbody").vel.y == 0) then
+        self:getComponent("rigidbody"):applyFriction(0.15)
+    end
 
     for i=1,#items do
         if(items[i] ~= nil) then

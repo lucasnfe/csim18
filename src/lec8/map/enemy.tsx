@@ -5,5 +5,8 @@
   <properties>
    <property name="sprite" value="sprites/enemy.png"/>
   </properties>
+  <objectgroup draworder="index">
+   <object id="1" x="1" y="1" width="5" height="6"/>
+  </objectgroup>
  </tile>
 </tileset>

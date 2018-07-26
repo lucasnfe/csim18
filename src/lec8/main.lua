@@ -43,6 +43,9 @@ function love.load()
 
 	-- Load characters
 	player, enemies = level_parser:loadCharacters("Characters")
+	print("Player Collider!!!!!!!!")
+	print(player:getComponent("collider").rect.w)
+	print(player:getComponent("collider").rect.h)
 
 	local sprite = love.graphics.newImage("sprites/player.png")
 	local animator = csim_animator(sprite, 8, 8)
@@ -71,9 +74,9 @@ function love.update(dt)
 		camera.y = csim_math.clamp(camera.y, 0, 0)
 	end
 
-	for i=1,#enemies do
-		enemies[i]:update(dt)
-	end
+	-- for i=1,#enemies do
+	-- 	enemies[i]:update(dt)
+	-- end
 
 	if(map.backgroundcolor) then
 		love.graphics.setBackgroundColor(map.backgroundcolor[1]/255,

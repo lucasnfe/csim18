@@ -29,6 +29,17 @@ function csim_rigidbody:applyForce(f)
     self.acc.y = self.acc.y + f.y/self.mass
 end
 
+function csim_rigidbody:applyFriction(u)
+    if(self.vel:mag() > 0.1) then
+        local f = csim_vector(self.vel.x, self.vel.y)
+        f = f:norm()
+        f = f:mul(-1 * u)
+        self:applyForce(f)
+    else
+        self.vel = csim_vector(0,0)
+    end
+end
+
 function csim_rigidbody:update(dt)
     -- Apply weight force
     local g = csim_vector(0, 0.098)
@@ -39,8 +50,8 @@ function csim_rigidbody:update(dt)
 
     local collider = self.parent:getComponent("collider")
     if(collider) then
-        collider:detectHorizontalCollision()
-        collider:detectVerticalCollision()
+        collider:detectVerticalCollision(self.vel)
+        collider:detectHorizontalCollision(self.vel)
     end
 
     if(self.vel:mag() > self.max_speed) then

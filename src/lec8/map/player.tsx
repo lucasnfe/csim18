@@ -7,7 +7,7 @@
    <property name="sprite" value="sprites/player.png"/>
   </properties>
   <objectgroup draworder="index">
-   <object id="4" x="0.125" y="0" width="7" height="8"/>
+   <object id="4" x="0" y="0" width="7" height="8"/>
   </objectgroup>
  </tile>
 </tileset>
