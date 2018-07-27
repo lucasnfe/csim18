@@ -56,6 +56,13 @@ function csim_rigidbody:applyResistance(c_d, only_horizontal)
         end
 
         self:applyForce(f)
+    else
+        local f = csim_vector(0,0)
+        if(only_horizontal) then
+            f.y = self.vel.y
+        end
+
+        self.vel = f
     end
 end
 

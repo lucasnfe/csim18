@@ -43,16 +43,20 @@ function csim_player:move(r, l, u, d)
         self:getComponent("animator"):play("idle")
 	end
 
-	if(love.keyboard.isDown(u) and self.is_on_ground) then
-        local f = csim_vector(0, -2)
-        if (self.is_in_water) then
-            f = csim_vector(0, -0.8)
+	if(love.keyboard.isDown(u)) then
+        if(self.is_on_ground) then
+            local f = csim_vector(0, -2)
+            self:getComponent("rigidbody"):applyForce(f)
+
+            self:getComponent("animator"):play("jump")
+            self.is_on_ground = false
+        elseif (self.is_in_water) then
+            local f = csim_vector(0, -0.8)
+            self:getComponent("rigidbody"):applyForce(f)
+
+            self:getComponent("animator"):play("jump")
+            self.is_on_ground = false
         end
-
-        self:getComponent("rigidbody"):applyForce(f)
-
-        self:getComponent("animator"):play("jump")
-        self.is_on_ground = false
 	end
 
 	if( love.keyboard.isDown(d)) then
@@ -85,7 +89,6 @@ end
 function csim_player:onVerticalTriggerCollision(tile, vert_side)
     if(tile.id == 2) then
         print("Im in water")
-        self.is_on_ground = true
         self.is_in_water = true
     end
 end
@@ -93,7 +96,6 @@ end
 function csim_player:onHorizontalTriggerCollision(tile, vert_side)
     if(tile.id == 2) then
         print("Im in water")
-        self.is_on_ground = true
         self.is_in_water = true
     end
 end
@@ -105,15 +107,19 @@ function csim_player:update(dt)
 
     if(self.is_on_ground) then
         -- Apply friction if is on ground
-        self:getComponent("rigidbody"):applyFriction(0.15)
+        -- self:getComponent("rigidbody"):applyFriction(0.15)
+        self:getComponent("rigidbody"):applyResistance(0.1, true)
     else
-        if(not self.is_on_water) then
-            -- Apply air resistance on the horizontal axis only if is in the air
-            self:getComponent("rigidbody"):applyResistance(0.1, true)
-        else
+        if(not self.is_in_water) then
             -- Apply water resistance if is in the air
-            self:getComponent("rigidbody"):applyResistance(0.5)
+            self:getComponent("rigidbody"):applyResistance(0.1, true)
         end
+    end
+
+    if(self.is_in_water) then
+        -- Apply air resistance on the horizontal axis only if is in the air
+        self:getComponent("rigidbody"):applyResistance(0.8, false)
+        print("water!")
     end
 
     self.is_in_water = false
