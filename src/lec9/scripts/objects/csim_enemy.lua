@@ -16,11 +16,7 @@ function csim_enemy:init(x, y, w, h, r, spr, life)
 end
 
 function csim_enemy:update(dt)
-    local vel = player.pos:sub(self.pos)
-    vel = vel:norm()
-    vel = vel:div(2)
 
-    self.pos = self.pos:add(vel)
 end
 
 return csim_enemy

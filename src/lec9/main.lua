@@ -66,13 +66,13 @@ function love.update(dt)
 		player:update(dt)
 
 		camera:setPosition(player.pos.x - gameWidth/2, player.pos.y - gameHeight/2)
-		camera.x = csim_math.clamp(camera.x, 0, 100)
+		camera.x = csim_math.clamp(camera.x, 0, map.tilewidth*map.width)
 		camera.y = csim_math.clamp(camera.y, 0, 0)
 	end
 
-	-- for i=1,#enemies do
-	-- 	enemies[i]:update(dt)
-	-- end
+	for i=1,#enemies do
+		enemies[i]:update(dt)
+	end
 
 	if(map.backgroundcolor) then
 		love.graphics.setBackgroundColor(map.backgroundcolor[1]/255,

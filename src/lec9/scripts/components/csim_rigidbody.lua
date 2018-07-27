@@ -10,7 +10,7 @@ local csim_vector = require "scripts.csim_vector"
 
 local csim_rigidbody = class()
 
-local MAX_SPEED = 5
+local MAX_SPEED = 3
 
 function csim_rigidbody:init(mass, max_speed)
     self.vel = csim_vector(0,0)
@@ -31,12 +31,31 @@ end
 
 function csim_rigidbody:applyFriction(u)
     if(self.vel:mag() > 0.1) then
-        local f = csim_vector(self.vel.x, self.vel.y)
-        f = f:norm()
+        local f = self.vel:norm()
         f = f:mul(-1 * u)
         self:applyForce(f)
     else
         self.vel = csim_vector(0,0)
+    end
+end
+
+function csim_rigidbody:applyResistance(c_d, only_horizontal)
+    only_horizontal = only_horizontal or false
+
+    if(self.vel:mag() > 0.1) then
+
+        local speed = self.vel:mag()
+        local dragMagnitude = c_d * speed * speed
+
+        local f = self.vel:mul(-1)
+        f = f:norm()
+        f = f:mul(dragMagnitude)
+
+        if(only_horizontal) then
+            f.y = 0
+        end
+
+        self:applyForce(f)
     end
 end
 
