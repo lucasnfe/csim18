@@ -19,6 +19,7 @@ local csim_player = require "scripts.objects.csim_player"
 -- Loading components
 local csim_rigidbody = require "scripts.components.csim_rigidbody"
 local csim_animator = require "scripts.components.csim_animator"
+local csim_psystem = require "scripts.components.csim_psystem"
 
 -- Loading CSIM libraries
 local csim_math = require "scripts.csim_math"
@@ -43,12 +44,18 @@ function love.load()
 
 	-- Load characters
 	player, enemies = level_parser:loadCharacters("Characters")
+
+	-- Add animator to player
 	local sprite = love.graphics.newImage("sprites/player.png")
 	local animator = csim_animator(sprite, 8, 8)
 	animator:addClip("idle", {1}, 1, true)
 	animator:addClip("move", {1,2,3,4,5}, 6, true)
 	animator:addClip("jump", {3}, 1, true)
 	player:addComponent(animator)
+
+	-- Add particle system to player
+	local p_system = csim_psystem(4, 1, 30, {1,1})
+	player:addComponent(p_system)
 
 	-- Load items
 	items = level_parser:loadItems("Items")

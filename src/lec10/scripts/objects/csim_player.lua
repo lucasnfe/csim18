@@ -100,10 +100,19 @@ function csim_player:onHorizontalTriggerCollision(tile, vert_side)
     end
 end
 
+function csim_player:shoot(shoot_key)
+    if(love.keyboard.isDown(shoot_key)) then
+        local f = csim_vector(5 * self.dir, love.math.random(-1, 1))
+        self:getComponent("psystem"):shoot(f)
+    end
+end
+
 function csim_player:update(dt)
     csim_object.update(self, dt)
 
     self:move("d", "a", "w", "s")
+
+    self:shoot("z")
 
     if(self.is_on_ground) then
         -- Apply friction if is on ground

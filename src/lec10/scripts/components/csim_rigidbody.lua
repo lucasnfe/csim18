@@ -12,11 +12,12 @@ local csim_rigidbody = class()
 
 local MAX_SPEED = 3
 
-function csim_rigidbody:init(mass, max_speed)
+function csim_rigidbody:init(mass, max_speed, apply_gravity)
     self.vel = csim_vector(0,0)
     self.acc = csim_vector(0,0)
     self.max_speed = max_speed or MAX_SPEED
     self.mass = mass or 1
+    self.apply_gravity = apply_gravity or 1
     self.name = "rigidbody"
 end
 
@@ -68,9 +69,11 @@ end
 
 function csim_rigidbody:update(dt)
     -- Apply weight force
-    local g = csim_vector(0, 0.098)
-    local weight = g:mul(self.mass)
-    self:applyForce(weight)
+    if(self.apply_gravity == 1) then
+        local g = csim_vector(0, 0.098)
+        local weight = g:mul(self.mass)
+        self:applyForce(weight)
+    end
 
     self.vel = self.vel:add(self.acc)
 
